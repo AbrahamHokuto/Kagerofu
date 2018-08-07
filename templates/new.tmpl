@@ -1,0 +1,38 @@
+%# -*- mode:html -*-
+% my $categories = shift;
+
+<div class="new-thread-form-wrapper" style="margin:auto;width:960px;">
+  <h1>New Thread</h1>
+  <form class="new-thread-form" method="POST" action="/action/new_thread">
+    <div class="input-group">
+      <label>Title</label>
+      <input type="text" name="title" required>
+    </div>
+    <div class="input-group">
+      <label>Category</label>
+      <select name="category">
+	% while (my($name, $cid) = $categories->fetchrow_array) {
+	<option value="<%== $cid %>"><%== $name %></option>
+	% }
+      </select>
+    </div>
+    <div class="input-group">
+      <label>Renderer</label>
+      <select name="renderer">
+	<option value="plain" selected>Plain Text</option>
+	<option value="markdown">Markdown</option>
+      </select>
+    </div>
+    <div class="input-group">
+      <label>Status</label>
+      <select name="draft">
+	<option value="1" selected>Draft</option>
+	<option value="0">Published</option>
+      </select>
+    </div>
+    <div class="input-group">
+      <textarea name="content" placeholder="Your content here" rows="20"></textarea>
+    </div>
+    <input type="submit" value="Submit">
+  </form>
+</div>

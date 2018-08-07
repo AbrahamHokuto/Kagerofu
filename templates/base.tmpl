@@ -1,0 +1,92 @@
+{# -*- mode:jinja2 -*- #}
+
+<html>
+  <head>
+    <meta charset="utf8">
+    <title>{{ title }} -- Chikyuu School</title>
+    <link rel="stylesheet" href="/static/css/style.css" />
+    <link rel="stylesheet" href="/static/css/icons/flaticon.css" />
+  </head>
+  <body>
+    
+    <div class="sidebar">
+      <div class="trigger"></div>
+      <div class="wrapper-outer">
+	<div class="wrapper-inner">
+	  <div class="brand">
+	    <a href="/">耻球学派·改三</a>
+	  </div>
+	  
+	  # if user
+	  <a style="display:inline-block;" href="/settings/avatar">
+	    <img class="avatar" src="/avatar/200/<%= $user->{avatar} %>.png">
+	  </a>
+	  # else
+	  <a class="login-button" href="/login">
+	    <i class="flaticon-enter3"></i>
+	  </a>
+	  #endif
+	  
+	  <div class="sidebar-navs-wrapper">
+	    <ul id="category-list" class="sidebar-nav">
+	      {# % while ( my($i,$cid) = $sth->fetchrow_array ) { #}
+	      <li class="entry">
+		<a href="/category/<%= $cid %>"><%== $i %></a>
+	      </li>
+	      {# % } #}
+	    </ul>
+	    {# % if ($user) { #}
+	    <ul id="user-nav-list" class="sidebar-nav">
+	      <li class="entry">
+		<a href="/drafts/by_changed">My Drafts</a>
+	      </li>	    
+	    </ul>
+	    {# % } #}
+	  </div>
+	  <div class="footer">Icons made by Yannick, Freepik, Icomoon from <a href="http://www.flaticon.com" title="Flaticon">www.flaticon.com</a> is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0">CC BY 3.0</a></div>
+	</div>
+      </div>
+    </div>
+    <!-- Sidebar ends -->
+    
+    <div id="body-wrapper">
+      <nav class="navbar">
+	<a class="index-button" href="/">
+	  <i class="flaticon-home18"></i>
+	</a>
+	<div class="title-wrapper">
+	  <h1>{{ title }}</h1>
+	</div>
+	
+	<div class="user-area">
+	  # if user
+	  <div>
+	    <a href="/new" class="flaticon-gross"></a>
+	    <a href="/logout" class="flaticon-arrow112"></a>
+	  </div>
+	  # else
+	  <div>
+	    <a href="/register" class="flaticon-create1"></a>
+	    <a href="/login" class="flaticon-enter3"></a>
+	  </div>
+	  # endif 
+	</div>
+      </nav>
+      <!-- Navbar ends -->
+      
+      <div class="container">
+	<div>
+	  <h3 style="margin-bottom:0;">“我们具有世界上最先进的文明。”</h3>
+	</div>
+	
+	{% block content %}{% endblock %}
+	  
+      </div>
+    </div>
+    <script src="/static/js/jquery.js"></script>
+    <script>
+      $('.sidebar .trigger').click(function () { $('.sidebar').css('left','0'); });
+      $(document).click(function (e) { if (e.target != $('.sidebar .trigger')[0]) $('.sidebar').css('left', '-240px'); });
+    </script>
+  </body>
+</html>

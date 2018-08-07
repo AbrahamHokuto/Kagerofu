@@ -1,0 +1,82 @@
+{# -*- mode:jinja2 -*- #}
+# extends "base.tmpl"
+
+# block content
+<ul class="nav right">
+  <span>Order by:</span>
+  <li>
+    <a href="{{ baseurl }}/last_modified/1" %>
+      <span>Last Modified</span>
+    </a>
+  </li>
+  <li>
+    <a href="{{ baseurl }}/publish/1">
+      <span>Published</span>
+    </a>
+  </li>
+  <li>
+    <a href="{{ baseurl }}/reply/1">
+      <span>Reply count</span>
+    </a>
+  </li>
+  <li>
+    <a href="{{ baseurl }}/random/1">
+      <span>Brownian motion</span>
+    </a>
+  </li>
+</ul>
+
+# set rows = namespace(count=0)
+
+<div class="list-wrapper">
+  <ul class="thread-list">
+    # for thread_id, thread_title, datetime, author, last_modified, reply_count in cursor
+    # set rows.count = rows.count + 1
+    # set reply_count = reply_count - 1
+    <li class="entry">
+      <a href="/thread/view/{{ thread_id }}" class="inner-wrapper">
+	<div class="title">
+	  <h2>{{ thread_title }}</h2>
+	</div>
+	<div class="info">
+	  <div class="reply-wrapper">
+	    <i class="flaticon-comments"></i><span>{{ reply_count }}</span>
+	  </div>
+	  <span class="author">{{ author }}</span>
+	  <span class="datetime">{{ last_modified }}</span>
+	</div>
+      </a>
+    </li>
+    # endfor
+  </ul>
+</div>
+
+# if rows.count == 0
+<span style="font-size:24px;color:#ccc;">Nothing Here.</span>
+# endif
+
+
+# if page == 1
+# set prev = 'javascript:;'
+# else
+# set prev = "{}/{}/{}".format(baseurl, order, page - 1)
+# endif
+
+# if page == total_pages
+# set next = 'javascript:;'
+# else 
+# set next = "{}/{}/{}".format(baseurl, order, page + 1)
+# endif
+
+# if total_pages > 1
+<ul class="pager">
+  <li class="entry prev">
+    <a href="{{ prev }}"><span>&lt;</span></a>
+  </li>
+  <span class="page">{{ page }}/{{ total_pages }}</span>
+  <li class="entry next">
+    <a href="{{ next }}"><span>&gt;</span></a>
+  </li>
+</ul>
+# endif
+# endblock

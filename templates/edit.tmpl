@@ -1,0 +1,50 @@
+%# -*- mode:html -*-
+% my($categories, $title, $category, $content, $draft, $renderer,
+%    $referer, $type, $oid) = @_;
+
+<div class="edit-form-wrapper" style="margin:auto;width:960px;">
+  <h1>Edit</h1>
+  <form class="edit-form" method="POST" action="/action/edit/<%== "$type/$oid" %>">
+    <div class="input-group">
+      % if ($type eq 'thread') {
+      <label>Title</label>
+      <input type="text" name="title" value="<%== $title %>" required>
+    </div>
+    <div class="input-group">
+      <label>Category</label>
+      <select name="category">
+	% while (my($name, $cid) = $categories->fetchrow_array) {
+	% my $selected = (($cid eq $category) ? 'selected="selected"' : '');
+	<option value="<%== $cid %>" <%== $selected %>><%== $name %></option>
+	% }
+      </select>
+    </div>
+    <div class="input-group">
+      <label>Status</label>
+      <select name="draft">
+	% my($draft_selected, $pub_selected) = ('', '');
+	<!-- draft: <%= $draft %> -->
+	% if ($draft) {
+	% $draft_selected = 'selected="selected"';
+	% } else {
+	% $pub_selected = 'selected="selected"';
+	% }
+	<option value="1" <%= $draft_selected %>>Draft</option>
+	<option value="0" <%= $pub_selected %>>Published</option>
+      </select>
+    </div>
+    % }
+    <div class="input-group">
+      <label>Renderer</label>
+      <select name="renderer">
+	<option value="plain" <%== 'selected' if $renderer eq 'plain' %>>Plain Text</option>
+	<option value="markdown"<%== 'selected' if $renderer eq 'markdown' %>>Markdown</option>
+      </select>
+    </div>
+    <input type="hidden" name="referer" value="<%== $referer %>">
+    <div class="input-group">
+      <textarea name="content" placeholder="Your content here" rows="20"><%== $content %></textarea>
+    </div>
+    <input type="submit" value="Submit">
+  </form>
+</div>
