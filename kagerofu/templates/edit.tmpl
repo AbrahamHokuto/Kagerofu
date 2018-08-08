@@ -1,0 +1,56 @@
+/// -*- mode:jinja2 -*-
+
+<div class="edit-form-wrapper" style="margin:auto;width:960px;">
+  <h1>Edit</h1>
+  <form class="edit-form" method="POST" action="/action/edit/<%== "$type/$oid" %>">
+    <div class="input-group">
+      # if type == "thread"
+      <label>Title</label>
+      <input type="text" name="title" value="{{ title }}" required>
+      # endif
+    </div>
+    <div class="input-group">
+      <label>Category</label>
+      <select name="category">
+	# for id, name in categories
+	# if id == current_category_id
+	# set selected = "selected"
+	# else
+	# set selected = ""
+	# endif
+	<option value="{{ id }}" {{ selected }}>{{ name }}</option>
+	# endfor
+      </select>
+    </div>
+    <div class="input-group">
+      <label>Status</label>
+      <select name="draft">
+	# if draft
+	# set draft_selected = 'selected="selected"';
+	# else
+	# set published_selected = 'selected="selected"';
+	# endif
+	<option value="1" {{ draft_selected }}>Draft</option>
+	<option value="0" {{ published_selected }}>Published</option>
+      </select>
+    </div>
+
+    <div class="input-group">
+      <label>Renderer</label>
+      <select name="renderer">
+	# if renderer == 'plain'
+	# set plain_selected = 'selected'
+	# else
+	# set markdown_selected = 'selected'
+	# endif
+	<option value="plain" {{ renderer }}>Plain Text</option>
+	<option value="markdown" {{ renderer }}>Markdown</option>
+      </select>
+    </div>
+    <input type="hidden" name="referrer" value="{{ referrer }}">
+    <div class="input-group">
+      <textarea name="content" placeholder="Your content here" rows="20">{{ content }}</textarea>
+    </div>
+    <input type="submit" value="Submit">
+  </form>
+</div>
