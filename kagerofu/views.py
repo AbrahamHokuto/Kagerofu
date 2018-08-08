@@ -114,7 +114,6 @@ def list_threads(order, page, category = None, author = None, draft = False):
         else:
             baseurl = "/index"
 
-    print(order)
     return render_template('list.tmpl', cursor = cursor, title = title, page = page, total_pages = total_pages, order = order, baseurl = baseurl)
 
 bp = flask.Blueprint("views", __name__)
@@ -200,12 +199,11 @@ def edit(edit_type, target_id):
         else:
             post_id = target_id
     except StopIteration:
-        cnx.close()
         flask.abort(404)
-    except:
+    finally:
         cnx.close()
-        raise
 
+    cnx = get_mysql_connection()
     try:
         cursor = cnx.cursor()
         cursor.execute("SELECT content, renderer FROM PostContent WHERE post = UNHEX(%s) ORDER BY datetime DESC", (post_id, ))

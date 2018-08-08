@@ -222,7 +222,6 @@ def edit(edit_type):
     post_content_id = str(uuid.uuid4()).replace('-', '')
     now = datetime.datetime.now()
 
-    cnx = get_mysql_connection()
     try:
         cursor = cnx.cursor()
         cursor.execute(
@@ -240,7 +239,7 @@ def edit(edit_type):
                 "WHERE id = UNHEX(%s)",
                 (title, category, is_draft, thread_id))
 
-            cnx.commit()
+        cnx.commit()
             
     finally:
         cnx.close()
