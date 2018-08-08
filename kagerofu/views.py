@@ -199,14 +199,15 @@ def edit(edit_type, target_id):
         else:
             post_id = target_id
     except StopIteration:
-        flask.abort(404)
-    finally:
         cnx.close()
-
-    cnx = get_mysql_connection()
+        flask.abort(404)
+    except:
+        cnx.close()
+        raise
+        
     try:
         cursor = cnx.cursor()
-        cursor.execute("SELECT content, renderer FROM PostContent WHERE post = UNHEX(%s) ORDER BY datetime DESC", (post_id, ))
+        cursor.execute("SELECT content, renderer FROM PostContent WHERE post = UNHEX(%s) ORDER BY datetime DESC LIMIT 0, 1", (post_id, ))
         content, renderer = cursor.next()
     finally:
         cnx.close()
