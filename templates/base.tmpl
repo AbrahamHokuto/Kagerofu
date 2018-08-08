@@ -2,7 +2,7 @@
 
 <html>
   <head>
-    <meta charset="utf8">
+    <meta charset="utf8" name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ title }} -- Chikyuu School</title>
     <link rel="stylesheet" href="/static/css/style.css" />
     <link rel="stylesheet" href="/static/css/icons/flaticon.css" />
@@ -29,21 +29,23 @@
 	  
 	  <div class="sidebar-navs-wrapper">
 	    <ul id="category-list" class="sidebar-nav">
-	      {# % while ( my($i,$cid) = $sth->fetchrow_array ) { #}
+	      # for name, id in categories
 	      <li class="entry">
-		<a href="/category/<%= $cid %>"><%== $i %></a>
+		<a href="/category/{{ id }}">{{ name }}</a>
 	      </li>
-	      {# % } #}
+	      # endfor
 	    </ul>
 	    {# % if ($user) { #}
-	    <ul id="user-nav-list" class="sidebar-nav">
-	      <li class="entry">
-		<a href="/drafts/by_changed">My Drafts</a>
-	      </li>	    
-	    </ul>
+	    /// <ul id="user-nav-list" class="sidebar-nav">
+	    /// <li class="entry">
+	    /// <a href="/drafts/by_changed">My Drafts</a>
+	    /// </li>	    
+	    /// </ul>
 	    {# % } #}
 	  </div>
-	  <div class="footer">Icons made by Yannick, Freepik, Icomoon from <a href="http://www.flaticon.com" title="Flaticon">www.flaticon.com</a> is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0">CC BY 3.0</a></div>
+	  <div class="footer">
+	    Icons made by Yannick, Freepik, Icomoon from <a href="http://www.flaticon.com" title="Flaticon">www.flaticon.com</a> is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0">CC BY 3.0</a>
+	  </div>
 	</div>
       </div>
     </div>
@@ -80,7 +82,7 @@
 	</div>
 	
 	{% block content %}{% endblock %}
-	  
+	
       </div>
     </div>
     <script src="/static/js/jquery.js"></script>

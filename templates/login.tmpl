@@ -1,14 +1,12 @@
-%# -*- mode:html -*-
-% my($referer, $error) = @_;
-% use HTML::Entities;
+/// -*- mode:jinja2 -*-
 
 <div class="login-form-wrapper" style="margin:auto;width:480px;">
   <h1>Welcome Back</h1>
-  % if ( defined $error ) {
+  # if error != None
   <span style="color:red;">
     Error: <%== $error %>
   </span>
-  % }
+  # endif
   <form class="login-form" method="POST" action="/login">
     <div class="input-group">
       <label>User name</label>
@@ -18,7 +16,7 @@
       <label>Password</label>
       <input type="password" name="password">
     </div>
-    <input type="hidden" value="<%= ($referer ? encode_entities($referer) : '') %>" name="referer">
+    <input type="hidden" value="{{ referer }}" name="referer">
     <input type="submit" value="Login">
   </form>
 </div>

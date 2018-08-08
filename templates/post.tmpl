@@ -1,68 +1,68 @@
-%# -*- mode:html -*-
-% my($sth, $cp, $page, $POST_PER_PAGE, $baseurl, $uid, $tid, $admin) = @_;
-% use Kagerou::Renderer;
+/// -*- mode:jinja2 -*-
 
-% if ($admin) {
-<a>TID: <%= $tid %></a>
-% }
+# extends "base.tmpl"
+# block content
 
-% my $floor = 1 + $POST_PER_PAGE*($cp - 1);
-% while ( my $i = $sth->fetchrow_hashref ) {
-<div class="post" id="post-<%== $i->{pid} %>">
+/// # if admin
+/// <a>TID: {{ $tid }}</a>
+/// # endif
+
+# set floor = namespace(floor = 1 + post_per_page * (page - 1))
+# for id, author, author_id, avatar, content, datetime, renderer in posts
+<div class="post" id="post-{{ id }}">
   <div class="info">
-    <img src="/avatar/60/<%= $i->{avatar} %>.png">
+    <img src="//www.gravatar.com/avatar/{{ avatar }}?s=60&d=identicon">
     <div class="info-left">
-      <span class="author"><%== $i->{author} %></span>
+      <span class="author">{{ author }}</span>
     </div>
     <div class="info-right">
-      % if ($uid and $uid eq $i->{aid}) {
-      % my $type = ($floor == 1) ? 'thread' : 'post';
-      % my $oid = ($floor == 1) ? $tid : $i->{pid};
-      <a href="/<%= $type %>/edit/<%= $oid %>" class="flaticon-gross edit-button"></a>
-      % }
-      <span class="datetime"><%== $i->{datetime} %></span>
+      /// % if ($uid and $uid eq $i->{aid}) {
+      /// % my $type = ($floor == 1) ? 'thread' : 'post';
+      /// % my $oid = ($floor == 1) ? $tid : $i->{pid};
+      /// <a href="/<%= $type %>/edit/<%= $oid %>" class="flaticon-gross edit-button"></a>
+      /// % }
+      <span class="datetime">{{ datetime }}</span>
     </div>
     <div class="floor-wrapper">
-      <span><%= $floor %></span>
+      <span>{{ floor.floor }}</span>
     </div>
   </div>
-  % if ($admin) {
-  <a>PID: <%= $i->{pid} %></a>
-  % }
+  /// % if ($admin) {
+  /// <a>PID: <%= $i->{pid} %></a>
+  /// % }
   <div class="content">
-    <%= Kagerou::Renderer::render($i->{content},renderer => $i->{renderer}) %>
+    /// <%= Kagerou::Renderer::render($i->{content},renderer => $i->{renderer}) %>
+    {{ render_content(renderer, content) }}
   </div>
 </div>
-% $floor += 1;
-% }
+# set floor.floor = floor.floor + 1
+# endfor
 
-<%
-   my($prev,$next);
-   if($cp == 1) {
-   $prev = 'javascript:;';
-   } else {
-   $prev = ("$baseurl/" . ($cp - 1));
-   }
-   if($cp == $page) {
-   $next = 'javascript:;';
-   } else {
-   $next = ("$baseurl/" . ($cp + 1));
-   }
-   %>
+# if page == 1
+# set prev = 'javascript:;'
+# else 
+# set prev = "{}/{}".format(baseurl, page - 1)
+# endif
 
-% if ($page > 1) {
+# if page == total_pages
+# set next = 'javascript:;'
+# else
+# set next = "{}/{}".format(baseurl, page + 1)
+# endif
+
+# if total_pages > 1
 <ul class="pager">
   <li class="entry prev">
-    <a href="<%= $prev %>"><span>&lt;</span></a>
+    <a href="{{ prev }}"><span>&lt;</span></a>
   </li>
-  <span class="page"><%== "$cp/$page" %></span>
+  <span class="page">{{ page }}/{{ total_pages }}</span>
   <li class="entry next">
-    <a href="<%= $next %>"><span>&gt;</span></a>
+    <a href="{{ next }}"><span>&gt;</span></a>
   </li>
 </ul>
-% }
+# endif
 
-% if ($uid) {
+# if user
 <div class="reply-area-wrapper">
   <form class="reply-form" action="/action/reply" method="POST">
     <div class="input-group">
@@ -79,13 +79,15 @@
     <input type="submit" value="Reply">
   </form>
 </div>
-% }
+# endif
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
 <script>
-  MathJax.Hub.Config({
-  tex2jax: {
-  inlineMath:[ ['$','$'],['\\(','\\)'] ]
-  }
-  });
+ MathJax.Hub.Config({
+ tex2jax: {
+ inlineMath:[ ['$','$'],['\\(','\\)'] ]
+ }
+ });
 </script>
+
+# endblock
