@@ -49,6 +49,7 @@ def render_template(template, **kwargs):
     kwargs["categories"] = categories
     kwargs["user"] = user
     kwargs["avatar"] = avatar
+    kwargs["user_id"] = cookie
 
     return flask.render_template(template, **kwargs)
 
@@ -285,7 +286,7 @@ def new_thread():
     category = flask.request.form["category"]
     renderer = flask.request.form["renderer"]
     content = flask.request.form["content"]
-    is_draft = bool(flask.request.form["draft"])
+    is_draft = bool(int(flask.request.form["draft"]))
 
     thread_id = str(uuid.uuid4()).replace('-', '')
     post_id = str(uuid.uuid4()).replace('-', '')
