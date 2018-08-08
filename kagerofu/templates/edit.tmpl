@@ -1,8 +1,11 @@
 /// -*- mode:jinja2 -*-
 
+# extends "base.tmpl"
+
+# block content
 <div class="edit-form-wrapper" style="margin:auto;width:960px;">
   <h1>Edit</h1>
-  <form class="edit-form" method="POST" action="/action/edit/<%== "$type/$oid" %>">
+  <form class="edit-form" method="POST" action="/action/edit/{{ type }}">
     <div class="input-group">
       # if type == "thread"
       <label>Title</label>
@@ -12,7 +15,7 @@
     <div class="input-group">
       <label>Category</label>
       <select name="category">
-	# for id, name in categories
+	# for name, id in categories
 	# if id == current_category_id
 	# set selected = "selected"
 	# else
@@ -26,9 +29,9 @@
       <label>Status</label>
       <select name="draft">
 	# if draft
-	# set draft_selected = 'selected="selected"';
+	# set draft_selected = 'selected="selected"'
 	# else
-	# set published_selected = 'selected="selected"';
+	# set published_selected = 'selected="selected"'
 	# endif
 	<option value="1" {{ draft_selected }}>Draft</option>
 	<option value="0" {{ published_selected }}>Published</option>
@@ -48,9 +51,14 @@
       </select>
     </div>
     <input type="hidden" name="referrer" value="{{ referrer }}">
+    # if type == "thread"
+    <input type="hidden" name="thread_id" value="{{ thread_id }}">
+    # endif
+    <input type="hidden" name="post_id" value="{{ post_id }}">
     <div class="input-group">
       <textarea name="content" placeholder="Your content here" rows="20">{{ content }}</textarea>
     </div>
     <input type="submit" value="Submit">
   </form>
 </div>
+# endblock

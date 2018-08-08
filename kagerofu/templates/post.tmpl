@@ -21,10 +21,12 @@
       # if user_id == author_id
       # if floor.floor == 1
       # set type = "thread"
+      # set target_id = thread_id
       # else
       # set type = "post"
+      # set target_id = id
       # endif
-      <a href="/{{ type }}/edit/{{ id }}" class="flaticon-gross edit-button"></a>
+      <a href="/{{ type }}/edit/{{ target_id }}" class="flaticon-gross edit-button"></a>
       # endif
       <span class="datetime">{{ datetime }}</span>
     </div>

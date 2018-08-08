@@ -1,14 +1,15 @@
-%# -*- mode:html -*-
-% my($referer, $error) = @_;
-% use HTML::Entities;
+/// -*- mode:jinja2 -*-
 
+# extends "base.tmpl"
+
+# block content
 <div class="register-form-wrapper" style="margin:auto;width:480px;">
   <h1>Welcome</h1>
-  % if ( defined $error ) {
+  # if error != None
   <span style="color:red;">
-    Error: <%== $error %>
+    Error: {{ error }}
   </span>
-  % }
+  # endif
   <form class="register-form" method="POST" action="/register">
     <div class="input-group">
       <label>User name</label>
@@ -22,7 +23,8 @@
       <label>E-Mail address</label>
       <input type="email" name="email">
     </div>
-    <input type="hidden" value="<%= ($referer ? encode_entities($referer) : '') %>" name="referer">
+    <input type="hidden" value="{{ referrer }}" name="referrer">
     <input type="submit" value="Register">
   </form>
 </div>
+# endblock

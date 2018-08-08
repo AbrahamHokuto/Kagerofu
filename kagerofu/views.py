@@ -108,12 +108,13 @@ def list_threads(order, page, category = None, author = None, draft = False):
         cnx.close()
 
         if draft:
-            baseurl = "/drafts/"
+            baseurl = "/drafts"
         elif category:
             baseurl = "/category/" + category
         else:
-            baseurl = "/index/"
-            
+            baseurl = "/index"
+
+    print(order)
     return render_template('list.tmpl', cursor = cursor, title = title, page = page, total_pages = total_pages, order = order, baseurl = baseurl)
 
 bp = flask.Blueprint("views", __name__)
@@ -174,3 +175,56 @@ def drafts(order, page):
         return flask.redirect("/")
     
     return list_threads(order, int(page), author = user, draft = True)
+
+@bp.route('/<edit_type>/edit/<target_id>')
+def edit(edit_type, target_id):
+    user = read_cookie(flask.request.cookies["session"])
+    if user == None:
+        flask.abort(401)
+
+    cnx = get_mysql_connection()
+    try:
+        cursor = cnx.cursor()
+
+        if edit_type == 'thread':
+            cursor.execute(
+                "SELECT title, HEX(category), draft FROM Thread "
+                "WHERE id = UNHEX(%s) AND author = UNHEX(%s)",
+                (target_id, user)
+            )
+            title, category, is_draft = cursor.next()
+
+            cursor.execute("SELECT HEX(id) FROM Post WHERE Post.thread = UNHEX(%s) ORDER BY datetime LIMIT 0, 1",
+                           (target_id, ))
+            post_id = cursor.next()[0]
+        else:
+            post_id = target_id
+    except StopIteration:
+        cnx.close()
+        flask.abort(404)
+    except:
+        cnx.close()
+        raise
+
+    try:
+        cursor = cnx.cursor()
+        cursor.execute("SELECT content, renderer FROM PostContent WHERE post = UNHEX(%s) ORDER BY datetime DESC", (post_id, ))
+        content, renderer = cursor.next()
+    finally:
+        cnx.close()
+
+    kwargs = {
+        "title": title,
+        "type": edit_type,
+        "renderer": renderer,
+        "referrer": flask.request.referrer,
+        "content": content,
+        "post_id": post_id
+    }
+
+    if edit_type == "thread":
+        kwargs["current_category_id"] = category
+        kwargs["draft"] = is_draft
+        kwargs["thread_id"] = target_id
+        
+    return render_template("edit.tmpl", **kwargs)
