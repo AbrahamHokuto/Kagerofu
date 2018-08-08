@@ -18,8 +18,8 @@
 	  </div>
 	  
 	  # if user
-	  <a style="display:inline-block;" href="/settings/avatar">
-	    <img class="avatar" src="/avatar/200/<%= $user->{avatar} %>.png">
+	  <a style="display:inline-block;" href="javascript:;">
+	    <img class="avatar" src="//www.gravatar.com/avatar/{{ avatar }}?s=200&d=identicon">
 	  </a>
 	  # else
 	  <a class="login-button" href="/login">
@@ -35,13 +35,13 @@
 	      </li>
 	      # endfor
 	    </ul>
-	    {# % if ($user) { #}
-	    /// <ul id="user-nav-list" class="sidebar-nav">
-	    /// <li class="entry">
-	    /// <a href="/drafts/by_changed">My Drafts</a>
-	    /// </li>	    
-	    /// </ul>
-	    {# % } #}
+	    # if user != None
+	    <ul id="user-nav-list" class="sidebar-nav">
+	      <li class="entry">
+		<a href="/drafts/last_modified">My Drafts</a>
+	      </li>	    
+	    </ul>
+	    # endif
 	  </div>
 	  <div class="footer">
 	    Icons made by Yannick, Freepik, Icomoon from <a href="http://www.flaticon.com" title="Flaticon">www.flaticon.com</a> is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0">CC BY 3.0</a>

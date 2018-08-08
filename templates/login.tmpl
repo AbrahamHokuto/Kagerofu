@@ -1,10 +1,13 @@
 /// -*- mode:jinja2 -*-
 
+# extends "base.tmpl"
+
+# block content
 <div class="login-form-wrapper" style="margin:auto;width:480px;">
   <h1>Welcome Back</h1>
   # if error != None
   <span style="color:red;">
-    Error: <%== $error %>
+    Error: {{ error }}
   </span>
   # endif
   <form class="login-form" method="POST" action="/login">
@@ -16,7 +19,8 @@
       <label>Password</label>
       <input type="password" name="password">
     </div>
-    <input type="hidden" value="{{ referer }}" name="referer">
+    <input type="hidden" value="{{ referrer }}" name="referrer">
     <input type="submit" value="Login">
   </form>
 </div>
+#endblock

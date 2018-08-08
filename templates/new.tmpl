@@ -1,6 +1,8 @@
-%# -*- mode:html -*-
-% my $categories = shift;
+/// -*- mode: jinja2 -*-
 
+# extends "base.tmpl"
+
+# block content
 <div class="new-thread-form-wrapper" style="margin:auto;width:960px;">
   <h1>New Thread</h1>
   <form class="new-thread-form" method="POST" action="/action/new_thread">
@@ -11,9 +13,9 @@
     <div class="input-group">
       <label>Category</label>
       <select name="category">
-	% while (my($name, $cid) = $categories->fetchrow_array) {
-	<option value="<%== $cid %>"><%== $name %></option>
-	% }
+	# for id, name in categories
+	<option value="{{ name }}">{{ id }}</option>
+	# endfor
       </select>
     </div>
     <div class="input-group">
@@ -36,3 +38,4 @@
     <input type="submit" value="Submit">
   </form>
 </div>
+# endblock

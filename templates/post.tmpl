@@ -16,11 +16,14 @@
       <span class="author">{{ author }}</span>
     </div>
     <div class="info-right">
-      /// % if ($uid and $uid eq $i->{aid}) {
-      /// % my $type = ($floor == 1) ? 'thread' : 'post';
-      /// % my $oid = ($floor == 1) ? $tid : $i->{pid};
-      /// <a href="/<%= $type %>/edit/<%= $oid %>" class="flaticon-gross edit-button"></a>
-      /// % }
+      # if user == author_id
+      # if floor.floor == 1
+      # set type = "thread"
+      # else
+      # set type = "post"
+      # endif
+      <a href="{{ type }}/edit/{{ id }}" class="flaticon-gross edit-button"></a>
+      # endif
       <span class="datetime">{{ datetime }}</span>
     </div>
     <div class="floor-wrapper">
@@ -75,7 +78,7 @@
     <div class="input-group">
       <textarea name="content" placeholder="Your reply here" rows="10"></textarea>
     </div>
-    <input type="hidden" name="tid" value="<%== $tid %>">
+    <input type="hidden" name="thread_id" value="{{ thread_id }}">
     <input type="submit" value="Reply">
   </form>
 </div>
