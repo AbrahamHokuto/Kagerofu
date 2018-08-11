@@ -212,6 +212,9 @@ def edit(edit_type):
     except:
         cnx.close()
         raise        
+
+    for i in cursor:
+        pass
     
     if edit_type == "thread":
         thread_id = flask.request.form["thread_id"]
