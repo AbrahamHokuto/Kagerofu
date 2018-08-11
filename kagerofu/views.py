@@ -3,6 +3,9 @@ import misaka
 import hashlib
 import re
 import html
+import pygments
+import pygments.formatters
+import pygments.lexers
 
 from kagerofu.cookie import read_cookie, create_cookie
 from kagerofu.database import get_mysql_connection
@@ -11,19 +14,38 @@ from kagerofu import config
 
 def render_content(renderer, content):
     def renderer_markdown(content):
+        class HighlighterRenderer(misaka.HtmlRenderer):
+            def blockcode(self, text, lang):
+                text.replace('\n\n', '\n')
+                try:
+                    lexer = pygments.lexers.get_lexer_by_name(lang, stripall=True)
+                except ClassNotFound:
+                    try:
+                        lexer = pygments.lexers.guess_lexer(text)
+                    except ClassNotFound:
+                        lexer = None
+
+                if lexer:
+                    formatter = HtmlFormatter()
+                    return highlight(text, lexer, formatter)
+
+                return '\n<pre><code>{}</code></pre>\n'.format(html.escape(text.strip()))
+                        
         def escape_formula(formula):
             return re.sub(r"([_*\\{}()])", r"\\\1", formula, flags=re.M)
 
         def remove_unnecessary_slash(formula):
             return re.sub(r"\\([_*\\{}()])", r"\1", formula, flags=re.M)
 
-        # content = content.replace("\n", "\n\n")
-        # content = re.sub(r"(```(.*?)```)", lambda m: m.group(1).replace("\n\n", "\n"), content, flags=re.M)
+        content = content.replace("\n", "\n\n")
         content = re.sub(r"(\\\((.+?)\\\))", lambda m: escape_formula(m.group(1)), content, flags=re.M)
         content = re.sub(r"(\$(.+?)\$)", lambda m: escape_formula(m.group(1)), content, flags=re.M)
         content = re.sub(r"```math(.*?)```", r"\1", content, flags=re.M)
 
-        content = misaka.html(content, ( 'fenced-code', 'strikethrough' ), ( 'html-escape', ))
+        renderer = HighlighterRenderer()
+        markdown = misaka.Markdown(renderer, ( 'fenced-code', 'strikethrough' ), ( 'html-escape', ))
+
+        content = markdown(content)
 
         content = re.sub(r'(\\\((.+?)\\\))', lambda m: remove_unnecessary_slash(m.group(1)), content, flags=re.M)
         content = re.sub(r'(\$(.+?)\$)', lambda m: remove_unnecessary_slash(m.group(1)), content, flags=re.M)
