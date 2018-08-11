@@ -243,9 +243,10 @@ def edit(edit_type, target_id):
         "content": content,
         "post_id": post_id
     }
-
+    
     if edit_type == "thread":
-        kwargs["title"] = title,
+        print(title)            
+        kwargs["title"] = title
         kwargs["current_category_id"] = category
         kwargs["draft"] = is_draft
         kwargs["thread_id"] = target_id
