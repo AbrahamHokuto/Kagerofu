@@ -4,8 +4,10 @@ import hashlib
 import re
 import html
 import pygments
+import pygments.util
 import pygments.formatters
 import pygments.lexers
+import pygments.styles
 
 from kagerofu.cookie import read_cookie, create_cookie
 from kagerofu.database import get_mysql_connection
@@ -16,18 +18,18 @@ def render_content(renderer, content):
     def renderer_markdown(content):
         class HighlighterRenderer(misaka.HtmlRenderer):
             def blockcode(self, text, lang):
-                text.replace('\n\n', '\n')
+                text = text.replace('\n\n', '\n')
                 try:
                     lexer = pygments.lexers.get_lexer_by_name(lang, stripall=True)
-                except ClassNotFound:
+                except pygments.util.ClassNotFound:
                     try:
                         lexer = pygments.lexers.guess_lexer(text)
-                    except ClassNotFound:
+                    except pygments.util.ClassNotFound:
                         lexer = None
 
                 if lexer:
-                    formatter = HtmlFormatter()
-                    return highlight(text, lexer, formatter)
+                    formatter = pygments.formatters.HtmlFormatter(style='colorful')
+                    return pygments.highlight(text, lexer, formatter)
 
                 return '\n<pre><code>{}</code></pre>\n'.format(html.escape(text.strip()))
                         
@@ -42,8 +44,8 @@ def render_content(renderer, content):
         content = re.sub(r"(\$(.+?)\$)", lambda m: escape_formula(m.group(1)), content, flags=re.M)
         content = re.sub(r"```math(.*?)```", r"\1", content, flags=re.M)
 
-        renderer = HighlighterRenderer()
-        markdown = misaka.Markdown(renderer, ( 'fenced-code', 'strikethrough' ), ( 'html-escape', ))
+        renderer = HighlighterRenderer(("html-escape", ))
+        markdown = misaka.Markdown(renderer, ( 'fenced-code', 'strikethrough' ))
 
         content = markdown(content)
 
@@ -172,7 +174,7 @@ def post(thread, page):
             "ORDER BY Post.datetime LIMIT %s, {}".format(config["paginator"]["post_per_page"])
         )
         cursor = cnx.cursor()
-        cursor.execute(query, (thread, int((int(page) - 1) / config["paginator"]["post_per_page"])))
+        cursor.execute(query, (thread, int((int(page) - 1) * config["paginator"]["post_per_page"])))
         posts = list(cursor)
 
         cursor = cnx.cursor()
@@ -182,7 +184,7 @@ def post(thread, page):
     finally:
         cnx.close()
         
-    total_pages = int((post_count - 1) / config["paginator"]["post_per_page"])
+    total_pages = int((post_count - 1) / config["paginator"]["post_per_page"] + 1)
     return render_template("post.tmpl", posts = posts,
                            page = int(page), total_pages = total_pages,
                            thread_author_id = thread_author_id,
@@ -235,7 +237,6 @@ def edit(edit_type, target_id):
         cnx.close()
 
     kwargs = {
-        "title": title,
         "type": edit_type,
         "renderer": renderer,
         "referrer": flask.request.referrer,
@@ -244,6 +245,7 @@ def edit(edit_type, target_id):
     }
 
     if edit_type == "thread":
+        kwargs["title"] = title,
         kwargs["current_category_id"] = category
         kwargs["draft"] = is_draft
         kwargs["thread_id"] = target_id

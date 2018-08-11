@@ -1,6 +1,7 @@
 import flask
 import datetime
 import uuid
+import traceback
 
 from kagerofu.template import render_template
 from kagerofu.database import get_mysql_connection
@@ -197,7 +198,6 @@ def edit(edit_type):
     content = flask.request.form["content"]
     referrer = flask.request.form["referrer"]
     post_id = flask.request.form["post_id"]
-    thread_id = flask.request.form["thread_id"]
 
     user = read_cookie(flask.request.cookies["session"])
 
@@ -238,9 +238,12 @@ def edit(edit_type):
                 "UPDATE Thread SET title = %s, category = UNHEX(%s), draft = %s "
                 "WHERE id = UNHEX(%s)",
                 (title, category, is_draft, thread_id))
-
         cnx.commit()
-            
+        for i in cursor:
+            pass
+    except:
+        traceback.print_exc()
+        
     finally:
         cnx.close()
 
