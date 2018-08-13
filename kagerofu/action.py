@@ -25,7 +25,7 @@ def login():
         referrer = "/"
 
     if flask.request.method == "GET":        
-        return render_template("login.tmpl", title = "Login", referrer = flask.request.referrer, error = None)
+        return render_template("login.tmpl", title = "Login", referrer = flask.request.referrer, error = None, type = "login")
     else:
         username = flask.request.form["username"]
         password = flask.request.form["password"]
@@ -39,7 +39,7 @@ def login():
                 userid = cursor.next()[0]
             except StopIteration:
                 error = "Wrong username or password"
-                return render_template("login.tmpl", referrer = referrer, error = error, title = "Login")
+                return render_template("login.tmpl", referrer = referrer, error = error, title = "Login", type = "login")
         finally:
             cnx.close()
 
@@ -51,7 +51,7 @@ def login():
 @bp.route('/register', methods=['GET', 'POST'])
 def register():
     if flask.request.method == "GET":
-        return render_template('register.tmpl', title = 'Register', referrer = flask.request.referrer)
+        return render_template('login.tmpl', title = 'Register', referrer = flask.request.referrer, type = "register")
 
     username = flask.request.form["username"]
     password = flask.request.form["password"]
@@ -69,7 +69,7 @@ def register():
         cnx.close()
         raise()
     else:
-        return render_template("register.tmpl", error = "User already exists", referrer = referrer, title = 'Register')
+        return render_template("login.tmpl", error = "User already exists", referrer = referrer, title = 'Register', type = "register")
 
     user_id = str(uuid.uuid4()).replace('-', '')
     
@@ -113,7 +113,7 @@ def new():
     finally:
         cnx.close()
 
-    return render_template("new.tmpl", title = "New Thread")
+    return render_template("edit.tmpl", title = "New Thread", type="new_thread")
 
 @bp.route('/action/new_thread', methods=['POST'])
 def new_thread():

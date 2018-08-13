@@ -1,100 +1,40 @@
 /// -*- mode:jinja2 -*-
 
 # extends "base.tmpl"
+
 # block content
 
-/// # if admin
-/// <a>TID: {{ $tid }}</a>
-/// # endif
+<div id="container-wrapper">
+  <div id="container">
+    # set floor = namespace(floor = 1 + post_per_page * (page - 1))
+    <ul id="post-list">
+      # for id, author, author_id, avatar, content, datetime, renderer in posts  
+      <li class="post">
+	<div class="post-info">
+	  <img src="https://www.gravatar.com/avatar/{{ avatar }}?s=40&d=identicon">
+	  <span class="color-green">{{ author }}</span><span> on </span><span class="color-green">{{ datetime.strftime("%B %d %Y %H:%M") }}</span>
+	  <span class="floor">#{{ floor.floor }}</span>
+	  # if user_id == author_id
+	  # if floor.floor == 1
+	  # set type = "thread"
+	  # set target_id = thread_id
+	  # else
+	  # set type = "post"
+	  # set target_id = id
+	  # endif
+	  <a class="edit" href="/{{ type }}/edit/{{ target_id }}">Edit</a>
+	  # endif
+	</div>
+	<div id="content">
+	  {{ render_content(renderer, content) }}
+	</div>
+      </li>
+      # set floor.floor = floor.floor + 1
+      # endfor
+    </ul>
 
-# set floor = namespace(floor = 1 + post_per_page * (page - 1))
-# for id, author, author_id, avatar, content, datetime, renderer in posts
-<div class="post" id="post-{{ id }}">
-  <!-- {{ user_id }} -->
-  <!-- {{ author_id }} -->
-  <div class="info">
-    <img src="//www.gravatar.com/avatar/{{ avatar }}?s=60&d=identicon">
-    <div class="info-left">
-      <span class="author">{{ author }}</span>
-    </div>
-    <div class="info-right">
-      # if user_id == author_id
-      # if floor.floor == 1
-      # set type = "thread"
-      # set target_id = thread_id
-      # else
-      # set type = "post"
-      # set target_id = id
-      # endif
-      <a href="/{{ type }}/edit/{{ target_id }}" class="flaticon-gross edit-button"></a>
-      # endif
-      <span class="datetime">{{ datetime }}</span>
-    </div>
-    <div class="floor-wrapper">
-      <span>{{ floor.floor }}</span>
-    </div>
-  </div>
-  /// % if ($admin) {
-  /// <a>PID: <%= $i->{pid} %></a>
-  /// % }
-  <div class="content">
-    /// <%= Kagerou::Renderer::render($i->{content},renderer => $i->{renderer}) %>
-    {{ render_content(renderer, content) }}
+    # include "sidebar.tmpl"
+
   </div>
 </div>
-# set floor.floor = floor.floor + 1
-# endfor
-
-# if page == 1
-# set prev = 'javascript:;'
-# else 
-# set prev = "{}/{}".format(baseurl, page - 1)
-# endif
-
-# if page == total_pages
-# set next = 'javascript:;'
-# else
-# set next = "{}/{}".format(baseurl, page + 1)
-# endif
-
-# if total_pages > 1
-<ul class="pager">
-  <li class="entry prev">
-    <a href="{{ prev }}"><span>&lt;</span></a>
-  </li>
-  <span class="page">{{ page }}/{{ total_pages }}</span>
-  <li class="entry next">
-    <a href="{{ next }}"><span>&gt;</span></a>
-  </li>
-</ul>
-# endif
-
-# if user
-<div class="reply-area-wrapper">
-  <form class="reply-form" action="/action/reply" method="POST">
-    <div class="input-group">
-      <label>Renderer:</label>
-      <select name="renderer">
-	<option value="plain" default>Plain Text</option>
-	<option value="markdown">Markdown</option>
-      </select>
-    </div>
-    <div class="input-group">
-      <textarea name="content" placeholder="Your reply here" rows="10"></textarea>
-    </div>
-    <input type="hidden" name="thread_id" value="{{ thread_id }}">
-    <input type="submit" value="Reply">
-  </form>
-</div>
-# endif
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
-<script>
- MathJax.Hub.Config({
- tex2jax: {
- inlineMath:[ ['$','$'],['\\(','\\)'] ]
- }
- });
-</script>
-
 # endblock

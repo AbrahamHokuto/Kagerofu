@@ -7,7 +7,7 @@ def create_cookie(user):
     cookie = "{}|{}".format(user, cookie_hash)
     return cookie
 
-def read_cookie(cookie):
+def read_cookie(cookie):    
     user, hashval = cookie.rsplit('|')
     if not hashlib.sha256((user + config["cookie_key"]).encode("utf8")).hexdigest() == hashval:
         return None

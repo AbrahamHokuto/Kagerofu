@@ -193,7 +193,11 @@ def post(thread, page):
 
 @bp.route('/drafts/<order>/<page>')
 def drafts(order, page):
-    user = read_cookie(flask.request.cookies["session"])
+    try:
+        user = read_cookie(flask.request.cookies["session"])
+    except:
+        user = None
+        
     if user == None:
         return flask.redirect("/")
     
@@ -201,7 +205,11 @@ def drafts(order, page):
 
 @bp.route('/<edit_type>/edit/<target_id>')
 def edit(edit_type, target_id):
-    user = read_cookie(flask.request.cookies["session"])
+    try:
+        user = read_cookie(flask.request.cookies["session"])
+    except:
+        user = None
+        
     if user == None:
         flask.abort(401)
 
@@ -237,7 +245,6 @@ def edit(edit_type, target_id):
         cnx.close()
 
     kwargs = {
-        "type": edit_type,
         "renderer": renderer,
         "referrer": flask.request.referrer,
         "content": content,
@@ -245,10 +252,13 @@ def edit(edit_type, target_id):
     }
     
     if edit_type == "thread":
-        print(title)            
+        print(title)
+        kwargs["type"] = "edit_thread"
         kwargs["title"] = title
         kwargs["current_category_id"] = category
         kwargs["draft"] = is_draft
         kwargs["thread_id"] = target_id
+    else:
+        kwargs["type"] = "edit_post"
         
     return render_template("edit.tmpl", **kwargs)

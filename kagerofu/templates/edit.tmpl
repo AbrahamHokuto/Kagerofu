@@ -3,61 +3,55 @@
 # extends "base.tmpl"
 
 # block content
-<div class="edit-form-wrapper" style="margin:auto;width:960px;">
-  <h1>Edit</h1>
-  <form class="edit-form" method="POST" action="/action/edit/{{ type }}">
+<div id="form-wrapper">
+  # if type == "new_thread"
+  # set action = "/action/new_thread"
+  # elif type == "edit_thread"
+  # set action = "/action/edit/thread"
+  # else
+  # set action = "/action/edit/post"
+  # endif
+  <form id="edit-form" method="POST" action="{{ action }}">
+    # if type == "new_thread" or type == "edit_thread"
     <div class="input-group">
-      # if type == "thread"
       <label>Title</label>
-      <input type="text" name="title" value="{{ title }}" required>
-      # endif
+      <input type="text" name="title" value="{{ title }}">
     </div>
+    # endif
     <div class="input-group">
       <label>Category</label>
       <select name="category">
 	# for name, id in categories
-	# if id == current_category_id
-	# set selected = "selected"
-	# else
-	# set selected = ""
-	# endif
-	<option value="{{ id }}" {{ selected }}>{{ name }}</option>
+	<option value="{{ id }}">{{ name }}</option>
 	# endfor
       </select>
     </div>
     <div class="input-group">
       <label>Status</label>
       <select name="draft">
-	# if draft
-	# set draft_selected = 'selected="selected"'
-	# else
-	# set published_selected = 'selected="selected"'
+	# if not draft
+	# set published_selected = 'selected'
 	# endif
-	<option value="1" {{ draft_selected }}>Draft</option>
+	<option value="1">Draft</option>
 	<option value="0" {{ published_selected }}>Published</option>
       </select>
     </div>
-
     <div class="input-group">
       <label>Renderer</label>
       <select name="renderer">
-	# if renderer == 'plain'
-	# set plain_selected = 'selected'
-	# else
+	# if renderer == 'markdown'
 	# set markdown_selected = 'selected'
 	# endif
-	<option value="plain" {{ plain_selected }}>Pl0ain Text</option>
+	<option value="plain">Plain Text</option>
 	<option value="markdown" {{ markdown_selected }}>Markdown</option>
       </select>
     </div>
-    <input type="hidden" name="referrer" value="{{ referrer }}">
-    # if type == "thread"
-    <input type="hidden" name="thread_id" value="{{ thread_id }}">
-    # endif
-    <input type="hidden" name="post_id" value="{{ post_id }}">
     <div class="input-group">
       <textarea name="content" placeholder="Your content here" rows="20">{{ content }}</textarea>
     </div>
+    <input type="hidden" name="referrer" value="{{ referrer }}">
+    <input type="hidden" name="thread_id" value="{{ thread_id }}">
+    <input type="hidden" name="post_id" value="{{ post_id }}">
     <input type="submit" value="Submit">
   </form>
 </div>

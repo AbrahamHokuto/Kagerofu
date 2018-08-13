@@ -3,14 +3,9 @@
 # extends "base.tmpl"
 
 # block content
-<div class="login-form-wrapper" style="margin:auto;width:480px;">
-  <h1>Welcome Back</h1>
-  # if error != None
-  <span style="color:red;">
-    Error: {{ error }}
-  </span>
-  # endif
-  <form class="login-form" method="POST" action="/login">
+
+<div id="form-wrapper">
+  <form id="login-form" method="POST" action="/{{ type }}">
     <div class="input-group">
       <label>User name</label>
       <input type="text" name="username">
@@ -19,8 +14,15 @@
       <label>Password</label>
       <input type="password" name="password">
     </div>
+    # if type == "register"
+    <div class="input-grup">
+      <label>Email</label>
+      <input type="email">
+    </div>
+    # endif
     <input type="hidden" value="{{ referrer }}" name="referrer">
-    <input type="submit" value="Login">
+    <input type="submit" value="{{ type.capitalize() }}">
   </form>
 </div>
-#endblock
+
+# endblock
