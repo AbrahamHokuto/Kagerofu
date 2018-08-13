@@ -56,6 +56,10 @@ form {
     }
 }
 
+#search-form {
+    box-shadow: none;
+}
+
 #form-wrapper-userinfo{
     display: inline-block;
     width: calc(100% - 230px);
