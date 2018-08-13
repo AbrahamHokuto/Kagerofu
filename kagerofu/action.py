@@ -301,7 +301,7 @@ def userinfo():
         cnx.close()
 
     if flask.request.method == "GET":
-        return render_template("userinfo.tmpl", error=False, name=name, email=email, nick=nick)
+        return render_template("userinfo.tmpl", error=False, name=name, email=email, nick=nick, title="User Info")
     else:
         try:
             name = flask.request.form["name"]
@@ -321,7 +321,7 @@ def userinfo():
                                (user, hashed_old_password))
                 if not cursor.fetchone():
                     cnx.close()
-                    return render_template("userinfo.tmpl", error=True, name=name, email=email, nick=nick)
+                    return render_template("userinfo.tmpl", error=True, name=name, email=email, nick=nick, title="User Info")
             except:
                 cnx.close()
                 raise
