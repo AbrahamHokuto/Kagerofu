@@ -34,6 +34,7 @@
       # set floor.floor = floor.floor + 1
       # endfor
 
+      # if user
       <div id="form-wrapper">
       <form id="reply-form" method="POST" action="/action/reply">
 	<div class="input-group">
@@ -49,7 +50,8 @@
 	<input type="hidden" name="thread_id" value="{{ thread_id }}">
 	<input type="submit" value="Reply">
       </form>
-    </div>
+      </div>
+      # endif
 
       #include "paginator.tmpl"
     </ul>
