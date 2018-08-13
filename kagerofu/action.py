@@ -247,3 +247,29 @@ def edit(edit_type):
         cnx.close()
 
     return flask.redirect(referrer)
+
+@bp.route('/search')
+def search():
+    query_string = flask.request.args.get('q');
+    if not query_string:
+        return render_template('search.tmpl', title="Search")
+
+    cnx = get_pg_connection();
+
+    try:
+        cursor = cnx.cursor()
+        cursor.execute("SELECT query.floor, query.post_id, query.thread_id, query.title, "
+                       "pgroonga_snippet_html(query.content, pgroonga_query_extract_keywords(%s)) FROM "
+                       "(SELECT post.post_id AS post_id, post.thread AS thread_id, post_content.content AS content, "
+                       "rank() OVER (PARTITION BY post.thread ORDER BY post.datetime) AS floor, thread.title AS title "
+                       "FROM post, post_content, thread WHERE post_content.post = post.post_id "
+                       "AND post.thread = thread.thread_id "
+                       "AND post.hidden = FALSE AND thread.hidden = FALSE "
+                       "AND thread.draft = FALSE "
+                       ") AS query WHERE query.content &@~ %s",
+                       (query_string, query_string))
+        ret = render_template("search.tmpl", title=query_string, cursor=cursor)
+    finally:
+        cnx.close()
+
+    return ret

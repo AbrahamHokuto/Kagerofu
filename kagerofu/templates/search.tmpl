@@ -1,0 +1,34 @@
+/// -*- mode:jinja2 -*-
+
+# extends "base.tmpl"
+
+# block content
+
+<div id="container-wrapper">
+  <div id="container">
+    
+    <ul id="search-result-list">
+      <li class="search-form-entry">
+	<form id="search-form" method="GET" action="/search">
+	  <input type="text" name="q" id="search-form-text" value="{{ title }}">
+	  <input type="submit" value="Search" id="search-form-submit">
+	</form>    
+      </li>
+
+      # if cursor
+      # for floor, post_id, thread_id, thread_title, preview in cursor
+      # set page = (floor - 1) // 10 + 1
+      <li class="search-result-entry">
+	<h2><a href="/thread/view/{{ thread_id }}/{{ page }}#post-{{ post_id }}">{{ thread_title }}</a></h2>
+	<p>{{ "...".join(preview) }}...</p>
+      </li>
+      # endfor
+      # endif
+    </ul>
+
+    # include "sidebar.tmpl"
+  </div>
+</div>
+
+# endblock
+

@@ -6,12 +6,14 @@
 
 <link rel="stylesheet" href="/static/css/highlight.css">
 
+<!-- thread: {{ thread_id }} -->
+
 <div id="container-wrapper">
   <div id="container">
     # set floor = namespace(floor = 1 + post_per_page * (page - 1))
     <ul id="post-list">
       # for id, author, author_id, avatar, content, datetime, renderer in posts  
-      <li class="post">
+      <li class="post" id="post-{{ id }}">
 	<div class="post-info">
 	  <img src="https://www.gravatar.com/avatar/{{ avatar }}?s=40&d=identicon">
 	  <span class="color-green">{{ author }}</span><span> on </span><span class="color-green">{{ datetime.strftime("%B %d %Y %H:%M") }}</span>
