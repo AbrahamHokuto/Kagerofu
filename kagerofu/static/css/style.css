@@ -169,35 +169,50 @@ nav {
 #form-wrapper {
   padding: 50px 0;
   margin: auto; }
-  #form-wrapper form {
-    margin: auto;
-    background-color: white;
-    padding: 50px;
-    box-shadow: 0 0 10px black;
-    font-family: sans-serif; }
-    #form-wrapper form#login-form {
-      width: 480px; }
-    #form-wrapper form#edit-form {
-      max-width: 640px; }
-    #form-wrapper form .input-group {
-      margin-bottom: 15px; }
-      #form-wrapper form .input-group input {
-        width: calc(100% - 12px);
-        border: 1px solid #49724a;
-        padding: 2px 5px;
-        display: block; }
-      #form-wrapper form .input-group select {
-        width: 100%;
-        border: 1px solid #49724a;
-        padding: 2px;
-        display: block;
-        background-color: white; }
-      #form-wrapper form .input-group textarea {
-        width: calc(100% - 6px);
-        border: 1px solid #49724a;
-        padding: 2px;
-        display: block;
-        background-color: white; }
+
+form {
+  margin: auto;
+  background-color: white;
+  padding: 50px;
+  box-shadow: 0 0 10px black;
+  font-family: sans-serif; }
+  form span.form-error {
+    color: white;
+    background-color: #0E402D;
+    display: block;
+    text-align: center; }
+  form#login-form {
+    width: 480px; }
+  form#edit-form {
+    max-width: 640px; }
+  form .input-group {
+    margin-bottom: 15px; }
+    form .input-group input {
+      width: calc(100% - 12px);
+      border: 1px solid #49724a;
+      padding: 2px 5px;
+      display: block; }
+    form .input-group select {
+      width: 100%;
+      border: 1px solid #49724a;
+      padding: 2px;
+      display: block;
+      background-color: white; }
+    form .input-group textarea {
+      width: calc(100% - 6px);
+      border: 1px solid #49724a;
+      padding: 2px;
+      display: block;
+      background-color: white; }
+
+#form-wrapper-userinfo {
+  display: inline-block;
+  width: calc(100% - 230px);
+  padding: 50px 0 0 0; }
+  #form-wrapper-userinfo #userinfo-form {
+    margin: 0;
+    display: inline-block;
+    width: calc(100% - 100px); }
 
 #paginator ul {
   list-style-type: none;

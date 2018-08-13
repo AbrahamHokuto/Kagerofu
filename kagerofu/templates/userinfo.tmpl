@@ -1,0 +1,46 @@
+/// -*- mode:jinja2 -*-
+
+/// -*- mode:jinja2 -*-
+
+# extends "base.tmpl"
+
+# block content
+
+<div id="container-wrapper">
+  <div id="container">
+
+    <div id="form-wrapper-userinfo">
+      <form id="userinfo-form" method="POST" action="/userinfo">
+	# if error
+	<span class="form-error">Wrong password</span>
+	# endif
+	<div class="input-group">
+	  <label>Username</label>
+	  <input type="text" name="name" value="{{ name }}">
+	</div>
+	<div class="input-group">
+	  <label>Email</label>
+	  <input type="email" name="email" value="{{ email }}">
+	</div>
+	<div class="input-group">
+	  <label>Nickname</label>
+	  <input type="text" name="nick" value="{{ nick }}">
+	</div>
+	<div class="input-group">
+	  <label>Old Password</label>
+	  <input type="password" name="old_password">
+	</div>
+	<div class="input-group">
+	  <label>New Password</label>
+	  <input type="password" name="new_password">
+	</div>
+	<input type="submit" value="Submit">
+      </form>
+    </div>
+
+    # include "sidebar.tmpl"
+      
+  </div>
+</div>
+
+# endblock

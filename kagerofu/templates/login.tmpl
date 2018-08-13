@@ -6,6 +6,9 @@
 
 <div id="form-wrapper">
   <form id="login-form" method="POST" action="/{{ type }}">
+    # if error
+    <span class="form-error">{{ error }}</span>
+    # endif
     <div class="input-group">
       <label>User name</label>
       <input type="text" name="username">

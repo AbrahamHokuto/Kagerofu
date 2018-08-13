@@ -3,6 +3,7 @@ import datetime
 import uuid
 import traceback
 import hashlib
+import crypt
 
 from kagerofu.template import render_template
 from kagerofu.database import get_pg_connection
@@ -31,22 +32,29 @@ def login():
         username = flask.request.form["username"]
         password = flask.request.form["password"]
 
-        hashed_password = hashlib.sha256(password.encode()).hexdigest().upper()
-
         cnx = get_pg_connection()
         try: 
             cursor = cnx.cursor()
+            cursor.execute("SELECT salt FROM users WHERE name = %s", (username, ))
+            salt = cursor.fetchone()
+            if salt:
+                salt = salt[0]
+            else:
+                error = "Wrong username or password"
+                return render_template("login.tmpl", referrer=referrer, error=error, title="Login", type="login")
+            hashed_password = hashlib.sha256((password + salt).encode()).hexdigest().upper()                    
             cursor.execute("SELECT user_id AS uid FROM users WHERE name = %s AND password = %s",
                            (username, hashed_password))
             
-            userid = cursor.fetchone()[0]
-            if not userid:
+            ret = cursor.fetchone()
+            if not ret:
                 cnx.close()
                 error = "Wrong username or password"
                 return render_template("login.tmpl", referrer = referrer, error = error, title = "Login", type = "login")
         finally:
             cnx.close()
-            
+
+        userid = ret[0]
         cookie = create_cookie(userid)
         response = flask.make_response(flask.redirect(referrer))
         response.set_cookie("session", cookie, expires=32503680000)
@@ -252,7 +260,7 @@ def edit(edit_type):
 def search():
     query_string = flask.request.args.get('q');
     if not query_string:
-        return render_template('search.tmpl', title="Search")
+        return render_template('search.tmpl', title="Search", query_string="")
 
     cnx = get_pg_connection();
 
@@ -268,8 +276,74 @@ def search():
                        "AND thread.draft = FALSE "
                        ") AS query WHERE query.content &@~ %s",
                        (query_string, query_string))
-        ret = render_template("search.tmpl", title=query_string, cursor=cursor)
+        ret = render_template("search.tmpl", title=query_string, cursor=cursor, query_string=query_string)
     finally:
         cnx.close()
 
     return ret
+
+@bp.route('/userinfo', methods=['GET', 'POST'])
+def userinfo():
+    try:
+        user = read_cookie(flask.request.cookies["session"])
+    except KeyError:
+        return flask.redirect("/")
+
+    if not user:
+        flask.redirect("/")
+
+    cnx = get_pg_connection()
+    try:
+        cursor = cnx.cursor()
+        cursor.execute('SELECT name, email, nick, salt FROM users WHERE user_id = %s', (user, ))
+        name, email, nick, salt = cursor.fetchone()
+    finally:
+        cnx.close()
+
+    if flask.request.method == "GET":
+        return render_template("userinfo.tmpl", error=False, name=name, email=email, nick=nick)
+    else:
+        try:
+            name = flask.request.form["name"]
+            email = flask.request.form["email"]
+            nick = flask.request.form["nick"]
+            old_password = flask.request.form["old_password"]
+            new_password = flask.request.form["new_password"]
+        except:
+            return flask.abort(400)
+            
+        if new_password != "":
+            cnx = get_pg_connection()
+            cursor = cnx.cursor()
+            try:
+                hashed_old_password = hashlib.sha256((old_password + salt).encode()).hexdigest().upper()
+                cursor.execute("SELECT user_id FROM users WHERE user_id = %s AND password = %s",
+                               (user, hashed_old_password))
+                if not cursor.fetchone():
+                    cnx.close()
+                    return render_template("userinfo.tmpl", error=True, name=name, email=email, nick=nick)
+            except:
+                cnx.close()
+                raise
+                
+            salt = crypt.mksalt(crypt.METHOD_SHA256)
+            hashed_password = hashlib.sha256((new_password + salt).encode()).hexdigest().upper()
+        else:
+            hashed_password = None
+
+        cnx = get_pg_connection()
+        try:
+            cursor = cnx.cursor()
+            if hashed_password:
+                print("password")
+                cursor.execute("UPDATE users SET email = %s, nick = %s, password = %s, salt = %s WHERE user_id = %s",
+                               (email, nick, hashed_password, salt, user))
+            else:
+                print("no password")
+                cursor.execute("UPDATE users SET email = %s, nick = %s WHERE user_id = %s",
+                               (email, nick, user))
+            cnx.commit()
+        finally:
+            cnx.close()
+
+        return flask.redirect("/userinfo")

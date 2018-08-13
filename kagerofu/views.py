@@ -78,13 +78,13 @@ def list_threads(order, page, category = None, author = None, draft = False):
 
     query = (
         "SELECT thread.thread_id, thread.title, thread.datetime AS publish_datetime, "
-        "users.name, MAX(post.last_modified) AS last_modified, "
+        "users.nick, MAX(post.last_modified) AS last_modified, "
         "(SELECT COUNT(*) FROM post WHERE post.thread = thread.thread_id) AS reply_count FROM thread, post, users "
         "WHERE thread.hidden = FALSE "
         "AND post.thread = thread.thread_id "
         "AND users.user_id = thread.author "
         "AND thread.draft = %s {} {} "
-        "GROUP BY thread.thread_id, users.name "
+        "GROUP BY thread.thread_id, users.nick "
         "ORDER BY {} DESC "
         "LIMIT {} "
         "OFFSET %s ").format(category_sql, author_sql, order_sql[order], config["paginator"]["thread_per_page"])        
@@ -167,7 +167,7 @@ def post(thread, page):
         post_count = cursor.fetchone()[0]
 
         query = (
-            "SELECT post.post_id, users.name, post.author, "
+            "SELECT post.post_id, users.nick, post.author, "
             "LOWER(MD5(TRIM(LOWER(users.email)))), "
             "post_content.content, post_content.datetime, post_content.renderer FROM post, users, thread, post_content "
             "WHERE post.thread = %s AND post.hidden = FALSE "

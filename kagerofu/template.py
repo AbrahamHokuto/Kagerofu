@@ -22,7 +22,7 @@ def render_template(template, **kwargs):
         categories = list(cursor)
 
         cursor = cnx.cursor()
-        cursor.execute('SELECT name, email FROM users WHERE user_id = %s', (cookie, ))
+        cursor.execute('SELECT nick, email FROM users WHERE user_id = %s', (cookie, ))
 
         result = cursor.fetchone()
 
@@ -33,7 +33,7 @@ def render_template(template, **kwargs):
             user, avatar = None, None
 
     finally:
-        cnx.close()    
+        cnx.close()
 
     kwargs["categories"] = categories
     kwargs["user"] = user
