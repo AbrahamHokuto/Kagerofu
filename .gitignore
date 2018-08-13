@@ -3,3 +3,4 @@ config.json
 authenticate/*
 kagerofu/prototype/*
 kagerofu/templates.old
+**/.sass-cache/

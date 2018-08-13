@@ -1,0 +1,46 @@
+@import "colors";
+
+#paginator ul {
+    list-style-type: none;
+    padding: 0 0 50px 0;
+    text-align: center;
+    margin: auto;
+    width: 100%;
+    position: relative;
+
+    span {
+	line-height: 50px;
+	background-color: white;
+	display: inline-block;
+	padding: 0 10px;
+	width: calc(100% - 20px);
+	box-shadow: 0 0 10px black;;
+    }
+
+    li {
+	position: absolute;
+	top: 0;
+
+	&#paginator-prev {
+	    left: 0;
+	}
+
+	&#paginator-next {
+	    right: 0;
+	}
+
+	a {
+	    display: block;
+	    background-color: $green;
+	    line-height: 50px;
+	    width: 100px;
+	    color: white;
+	    text-decoration: none;
+	    vertical-align: middle;
+
+	    &:hover {
+		background-color: $dark-green;
+	    }
+	}
+    }
+}

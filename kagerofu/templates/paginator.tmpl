@@ -1,0 +1,23 @@
+/// -*- mode:jinja2 -*-
+
+# if page == 1
+# set prev = "javascript:;"
+# else
+# set prev = "{}/{}".format(baseurl, page - 1)
+# endif
+
+# if page == total_pages
+# set next = "javascript:;"
+# else
+# set next = "{}/{}".format(baseurl, page + 1)
+# endif
+
+# if total_pages > 1
+<div id="paginator">
+  <ul>
+    <li id="paginator-prev"><a href="{{ prev }}">prev</a></li>
+    <span>{{ page }} / {{ total_pages }}</span>
+    <li id="paginator-next"><a href="{{ next }}">next</a></li>
+  </ul>
+</div>
+# endif

@@ -123,7 +123,7 @@ nav {
         text-align: center;
         width: 50px;
         margin-right: 10px;
-        background-color: #49724a;
+        background-color: #C5C5C5;
         color: white;
         text-decoration: none;
         font-family: sans-serif; }
@@ -133,6 +133,9 @@ nav {
 #content {
   text-align: justify;
   font-family: serif; }
+  #content .highlight pre {
+    white-space: pre-wrap;
+    padding: 20px; }
 
 #sidebar {
   display: inline-block;
@@ -195,6 +198,38 @@ nav {
         padding: 2px;
         display: block;
         background-color: white; }
+
+#paginator ul {
+  list-style-type: none;
+  padding: 0 0 50px 0;
+  text-align: center;
+  margin: auto;
+  width: 100%;
+  position: relative; }
+  #paginator ul span {
+    line-height: 50px;
+    background-color: white;
+    display: inline-block;
+    padding: 0 10px;
+    width: calc(100% - 20px);
+    box-shadow: 0 0 10px black; }
+  #paginator ul li {
+    position: absolute;
+    top: 0; }
+    #paginator ul li#paginator-prev {
+      left: 0; }
+    #paginator ul li#paginator-next {
+      right: 0; }
+    #paginator ul li a {
+      display: block;
+      background-color: #49724a;
+      line-height: 50px;
+      width: 100px;
+      color: white;
+      text-decoration: none;
+      vertical-align: middle; }
+      #paginator ul li a:hover {
+        background-color: #0E402D; }
 
 html {
   background-color: #C5C5C5;

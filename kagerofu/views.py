@@ -28,7 +28,7 @@ def render_content(renderer, content):
                         lexer = None
 
                 if lexer:
-                    formatter = pygments.formatters.HtmlFormatter(style='colorful')
+                    formatter = pygments.formatters.HtmlFormatter()
                     return pygments.highlight(text, lexer, formatter)
 
                 return '\n<pre><code>{}</code></pre>\n'.format(html.escape(text.strip()))
@@ -44,7 +44,7 @@ def render_content(renderer, content):
         content = re.sub(r"(\$(.+?)\$)", lambda m: escape_formula(m.group(1)), content, flags=re.M)
         content = re.sub(r"```math(.*?)```", r"\1", content, flags=re.M)
 
-        renderer = HighlighterRenderer(("html-escape", ))
+        renderer = HighlighterRenderer(("escape", ))
         markdown = misaka.Markdown(renderer, ( 'fenced-code', 'strikethrough' ))
 
         content = markdown(content)
@@ -134,9 +134,9 @@ def list_threads(order, page, category = None, author = None, draft = False):
         if draft:
             baseurl = "/drafts"
         elif category:
-            baseurl = "/category/" + category
+            baseurl = "/category/{}/{}".format(category, order)
         else:
-            baseurl = "/index"
+            baseurl = "/index/" + order
 
     return render_template('list.tmpl', cursor = cursor, title = title, page = page, total_pages = total_pages, order = order, baseurl = baseurl)
 

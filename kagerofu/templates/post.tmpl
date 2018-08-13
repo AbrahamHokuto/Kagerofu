@@ -4,6 +4,8 @@
 
 # block content
 
+<link rel="stylesheet" href="/static/css/highlight.css">
+
 <div id="container-wrapper">
   <div id="container">
     # set floor = namespace(floor = 1 + post_per_page * (page - 1))
@@ -31,10 +33,22 @@
       </li>
       # set floor.floor = floor.floor + 1
       # endfor
+
+      #include "paginator.tmpl"
     </ul>
 
     # include "sidebar.tmpl"
 
   </div>
 </div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+<script>
+ MathJax.Hub.Config({
+ tex2jax: {
+ inlineMath:[ ['$','$'],['\\(','\\)'] ]
+ }
+ });
+</script>
+
 # endblock

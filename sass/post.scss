@@ -47,7 +47,7 @@
 		text-align: center;
 		width: 50px;
 		margin-right: 10px;
-		background-color: $green;
+		background-color: $light-grey;
 		color: white;
 		text-decoration: none;
 		font-family: sans-serif;
@@ -63,4 +63,9 @@
 #content {
     text-align: justify;
     font-family: serif;
+
+    .highlight pre {
+	white-space: pre-wrap;
+	padding: 20px;
+    }
 }
