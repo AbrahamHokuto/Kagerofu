@@ -2,9 +2,10 @@ import flask
 import datetime
 import uuid
 import traceback
+import hashlib
 
 from kagerofu.template import render_template
-from kagerofu.database import get_mysql_connection
+from kagerofu.database import get_pg_connection
 from kagerofu.cookie import read_cookie, create_cookie
 from kagerofu import config
 
@@ -30,19 +31,22 @@ def login():
         username = flask.request.form["username"]
         password = flask.request.form["password"]
 
-        cnx = get_mysql_connection()
+        hashed_password = hashlib.sha256(password.encode()).hexdigest().upper()
+
+        cnx = get_pg_connection()
         try: 
             cursor = cnx.cursor()
-            cursor.execute("SELECT HEX(id) AS uid FROM User WHERE name = %s AND password = UNHEX(SHA2(%s, 256))",
-                           (username, password))
-            try:
-                userid = cursor.next()[0]
-            except StopIteration:
+            cursor.execute("SELECT user_id AS uid FROM users WHERE name = %s AND password = %s",
+                           (username, hashed_password))
+            
+            userid = cursor.fetchone()[0]
+            if not userid:
+                cnx.close()
                 error = "Wrong username or password"
                 return render_template("login.tmpl", referrer = referrer, error = error, title = "Login", type = "login")
         finally:
             cnx.close()
-
+            
         cookie = create_cookie(userid)
         response = flask.make_response(flask.redirect(referrer))
         response.set_cookie("session", cookie, expires=32503680000)
@@ -58,25 +62,22 @@ def register():
     email = flask.request.form["email"]
     referrer = flask.request.form["referrer"]
 
-    cnx = get_mysql_connection()
-    try:
-        cursor = cnx.cursor()
-        cursor.execute('SELECT name FROM User WHERE name = %s', (username, ))
-        cursor.next()
-    except StopIteration:
-        pass
-    except:
+    cnx = get_pg_connection()
+
+    cursor = cnx.cursor()
+    cursor.execute('SELECT name FROM users WHERE name = %s', (username, ))
+    if cursor.fetchone():
         cnx.close()
-        raise()
-    else:
         return render_template("login.tmpl", error = "User already exists", referrer = referrer, title = 'Register', type = "register")
 
     user_id = str(uuid.uuid4()).replace('-', '')
+
+    hashed_password = hashlib.sha256(password.encode()).hexdigest().upper()
     
     try:
         cursor = cnx.cursor()
-        cursor.execute("INSERT INTO User VALUES (UNHEX(%s), %s, %s, UNHEX(SHA2(%s, 256)))",
-                       (user_id, username, email, password))
+        cursor.execute("INSERT INTO users VALUES (%s, %s, %s, %s, %s, FALSE, FALSE, '')",
+                       (user_id, username, email, hashed_password, username))
         cnx.commit()
     finally:
         cnx.close()
@@ -106,7 +107,7 @@ def logout():
 
 @bp.route('/new')
 def new():
-    cnx = get_mysql_connection()
+    cnx = get_pg_connection()
     try:
         cursor = cnx.cursor()
         
@@ -137,20 +138,20 @@ def new_thread():
     post_id = str(uuid.uuid4()).replace('-', '')
     post_content_id = str(uuid.uuid4()).replace('-', '')
 
-    cnx = get_mysql_connection()    
+    cnx = get_pg_connection()    
     try:
         cursor = cnx.cursor()
-        cursor.execute("INSERT INTO Thread VALUES ("
-                       "UNHEX(%s), UNHEX(%s), UNHEX(%s), %s, %s, FALSE, %s)",
-                       (thread_id, userid, category, now, title, is_draft))
+        cursor.execute("INSERT INTO thread VALUES ("
+                       "%s, %s, %s, %s, %s, FALSE, %s )",
+                       (thread_id, userid, category, now, title, bool(is_draft)))
         
-        cursor.execute("INSERT INTO Post VALUES ("
-                       "UNHEX(%s), UNHEX(%s), UNHEX(%s), %s, FALSE, %s, UNHEX(%s))",
+        cursor.execute("INSERT INTO post VALUES ("
+                       "%s, %s, %s, %s, FALSE, %s, %s)",
                        (post_id, userid, thread_id, now, now, post_content_id))
 
-        cursor.execute("INSERT INTO PostContent VALUES ("
-                       "UNHEX(%s), UNHEX(%s), UNHEX(%s), %s, %s, %s)",
-                       (post_content_id, post_id, userid, content, renderer, now))
+        cursor.execute("INSERT INTO post_content VALUES ("
+                       "%s, %s, %s, %s, %s)",
+                       (post_content_id, post_id, renderer, content, now))
         cnx.commit()
 
     finally:
@@ -177,15 +178,15 @@ def reply():
     post_id = str(uuid.uuid4()).replace('-', '')
     post_content_id = str(uuid.uuid4()).replace('-', '')
 
-    cnx = get_mysql_connection()
+    cnx = get_pg_connection()
     try:
         cursor = cnx.cursor()
-        cursor.execute("INSERT INTO Post VALUES ("
-                       "UNHEX(%s), UNHEX(%s), UNHEX(%s), %s, FALSE, %s, UNHEX(%s))",
+        cursor.execute("INSERT INTO post VALUES ("
+                       "%s, %s, %s, %s, FALSE, %s, %s)",
                        (post_id, userid, thread_id, now, now, post_content_id))
-        cursor.execute("INSERT INTO PostContent VALUES ("
-                       "UNHEX(%s), UNHEX(%s), UNHEX(%s), %s, %s, %s)",
-                       (post_content_id, post_id, userid, content, renderer, now))
+        cursor.execute("INSERT INTO post_content VALUES ("
+                       "%s, %s, %s, %s, %s)",
+                       (post_content_id, post_id, renderer, content, now))
         cnx.commit()
     finally:
         cnx.close()
@@ -201,21 +202,18 @@ def edit(edit_type):
 
     user = read_cookie(flask.request.cookies["session"])
 
-    cnx = get_mysql_connection()
+    cnx = get_pg_connection()
     try:
         cursor = cnx.cursor()
-        cursor.execute("SELECT HEX(author) FROM Post WHERE id = UNHEX(%s) AND author = UNHEX(%s)",
+        cursor.execute("SELECT author FROM post WHERE post_id = %s AND author = %s",
                        (post_id, user))
-    except StopIteration:
-        cnx.close()
-        flask.abort(401)
+        if not cursor.fetchone():            
+            cnx.close()
+            flask.abort(401)
     except:
         cnx.close()
-        raise        
+        raise
 
-    for i in cursor:
-        pass
-    
     if edit_type == "thread":
         thread_id = flask.request.form["thread_id"]
         title = flask.request.form["title"]
@@ -228,22 +226,20 @@ def edit(edit_type):
     try:
         cursor = cnx.cursor()
         cursor.execute(
-            "INSERT INTO PostContent VALUES ("
-            "UNHEX(%s), UNHEX(%s), UNHEX(%s), %s, %s, %s)",
-            (post_content_id, post_id, user, content, renderer, now))
+            "INSERT INTO post_content VALUES ("
+            "%s, %s, %s, %s, %s)",
+            (post_content_id, post_id, renderer, content, now))
 
         cursor.execute(
-            "UPDATE Post SET content = UNHEX(%s), last_modified = UNHEX(%s) WHERE id=UNHEX(%s)",
+            "UPDATE post SET content = %s, last_modified = %s WHERE post_id=%s",
             (post_content_id, now, post_id))
 
         if edit_type == "thread":
             cursor.execute(
-                "UPDATE Thread SET title = %s, category = UNHEX(%s), draft = %s "
-                "WHERE id = UNHEX(%s)",
+                "UPDATE thread SET title = %s, category = %s, draft = %s "
+                "WHERE thread_id = %s",
                 (title, category, is_draft, thread_id))
         cnx.commit()
-        for i in cursor:
-            pass
     except:
         traceback.print_exc()
         

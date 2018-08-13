@@ -1,6 +1,6 @@
-import mysql.connector
+import psycopg2
 
 from kagerofu import config
 
-def get_mysql_connection():
-    return mysql.connector.connect(pool_name = "kagerofu", **config["db"])
+def get_pg_connection():
+    return psycopg2.connect(**config["db"])

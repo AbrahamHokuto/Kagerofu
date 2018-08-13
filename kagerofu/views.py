@@ -10,7 +10,7 @@ import pygments.lexers
 import pygments.styles
 
 from kagerofu.cookie import read_cookie, create_cookie
-from kagerofu.database import get_mysql_connection
+from kagerofu.database import get_pg_connection
 from kagerofu.template import render_template
 from kagerofu import config
 
@@ -67,35 +67,37 @@ def render_content(renderer, content):
 
 def list_threads(order, page, category = None, author = None, draft = False):
     order_sql = {
-        'publish': 'UNIX_TIMESTAMP(publish_datetime)',
+        'publish': 'publish_datetime',
         'reply': 'reply_count',
         'last_modified': 'last_modified',
         'random': 'RAND()'
     }
 
-    category_sql = "AND Thread.category = UNHEX(%s)" if category else ''
-    author_sql = "AND Thread.author = UNHEX(%s)" if author else ''
+    category_sql = "AND thread.category = %s" if category else ''
+    author_sql = "AND thread.author = %s" if author else ''
 
     query = (
-        "SELECT HEX(Thread.id) AS tid, Thread.title, Thread.datetime as publish_datetime, "
-        "User.name AS author, MAX(Post.last_modified) AS last_modified, "
-        "(SELECT COUNT(*) FROM Post WHERE Post.thread = Thread.id) AS reply_count FROM Thread "
-        "INNER JOIN User ON User.id = Thread.author "
-        "INNER JOIN Post ON Post.thread = Thread.id AND Post.hidden = FALSE "
-        "WHERE Thread.hidden = FALSE AND Thread.draft = %s {} {}"
-        "GROUP BY Thread.id "
+        "SELECT thread.thread_id, thread.title, thread.datetime AS publish_datetime, "
+        "users.name, MAX(post.last_modified) AS last_modified, "
+        "(SELECT COUNT(*) FROM post WHERE post.thread = thread.thread_id) AS reply_count FROM thread, post, users "
+        "WHERE thread.hidden = FALSE "
+        "AND post.thread = thread.thread_id "
+        "AND users.user_id = thread.author "
+        "AND thread.draft = %s {} {} "
+        "GROUP BY thread.thread_id, users.name "
         "ORDER BY {} DESC "
-        "LIMIT %s, {}").format(category_sql, author_sql, order_sql[order], config["paginator"]["thread_per_page"])        
-    page_query = "SELECT COUNT(*) FROM Thread WHERE hidden = FALSE AND draft = %s {} {}".format(category_sql, author_sql)
-    category_query = "SELECT name FROM Category WHERE id = UNHEX(%s)"
+        "LIMIT {} "
+        "OFFSET %s ").format(category_sql, author_sql, order_sql[order], config["paginator"]["thread_per_page"])        
+    page_query = "SELECT COUNT(*) FROM thread WHERE hidden = FALSE AND draft = %s {} {}".format(category_sql, author_sql)
+    category_query = "SELECT name FROM category WHERE category_id = %s"
 
-    cnx = get_mysql_connection()
+    cnx = get_pg_connection()
     try:
-        cursor = cnx.cursor(buffered=True)
-        page_cursor = cnx.cursor(buffered=True)
+        cursor = cnx.cursor()
+        page_cursor = cnx.cursor()
 
         if category:            
-            category_cursor = cnx.cursor(buffered=True)
+            category_cursor = cnx.cursor()
 
             if author:
                 cursor.execute(query, (draft, category, author, (page - 1) * config["paginator"]["thread_per_page"]))
@@ -109,7 +111,7 @@ def list_threads(order, page, category = None, author = None, draft = False):
                 
             category_cursor.execute(category_query, (category, ))
             
-            category_name, = category_cursor.next()
+            category_name, = category_cursor.fetchone()
             
             title = "Category: " + category_name
 
@@ -126,10 +128,8 @@ def list_threads(order, page, category = None, author = None, draft = False):
 
             title = "Index"
 
-        total_pages, = page_cursor.next()
+        total_pages, = page_cursor.fetchone()
         total_pages = int((total_pages - 1) / config["paginator"]["thread_per_page"] + 1)
-    finally:
-        cnx.close()
 
         if draft:
             baseurl = "/drafts"
@@ -138,7 +138,11 @@ def list_threads(order, page, category = None, author = None, draft = False):
         else:
             baseurl = "/index/" + order
 
-    return render_template('list.tmpl', cursor = cursor, title = title, page = page, total_pages = total_pages, order = order, baseurl = baseurl)
+        ret = render_template('list.tmpl', cursor = cursor, title = title, page = page, total_pages = total_pages, order = order, baseurl = baseurl)
+    finally:
+        cnx.close()
+
+    return ret;
 
 bp = flask.Blueprint("views", __name__)
 
@@ -152,34 +156,35 @@ def category_list(category, order, page):
 
 @bp.route('/thread/view/<thread>/<page>')
 def post(thread, page):
-    cnx = get_mysql_connection()
+    cnx = get_pg_connection()
     try:
         cursor = cnx.cursor()
-        cursor.execute("SELECT title FROM Thread WHERE id = UNHEX(%s)", (thread, ))
-        title = cursor.next()[0]
+        cursor.execute("SELECT title FROM thread WHERE thread_id = %s", (thread, ))
+        title = cursor.fetchone()[0]
 
         cursor = cnx.cursor()
-        cursor.execute("SELECT COUNT(*) FROM Post WHERE thread = UNHEX(%s)", (thread, ))
-        post_count = cursor.next()[0]
+        cursor.execute("SELECT COUNT(*) FROM post WHERE thread = %s", (thread, ))
+        post_count = cursor.fetchone()[0]
 
         query = (
-            "SELECT HEX(Post.id) AS pid, User.name AS author, "
-            "HEX(Post.author) AS author_id, "
-            "LOWER(MD5(TRIM(LOWER(User.email)))) AS avatar, "
-            "PostContent.content, PostContent.datetime, PostContent.renderer FROM Post "
-            "INNER JOIN User ON User.id = Post.author "
-            "INNER JOIN Thread ON Thread.id = Post.thread "
-            "INNER JOIN PostContent ON PostContent.id = Post.content "
-            "WHERE Post.thread = UNHEX(%s) AND Post.hidden = FALSE "
-            "ORDER BY Post.datetime LIMIT %s, {}".format(config["paginator"]["post_per_page"])
+            "SELECT post.post_id, users.name, post.author, "
+            "LOWER(MD5(TRIM(LOWER(users.email)))), "
+            "post_content.content, post_content.datetime, post_content.renderer FROM post, users, thread, post_content "
+            "WHERE post.thread = %s AND post.hidden = FALSE "
+            "AND post.thread = thread.thread_id "
+            "AND post.author = users.user_id "
+            "AND post.content = post_content.content_id "
+            "ORDER BY post.datetime LIMIT {} OFFSET %s".format(config["paginator"]["post_per_page"])
         )
         cursor = cnx.cursor()
         cursor.execute(query, (thread, int((int(page) - 1) * config["paginator"]["post_per_page"])))
         posts = list(cursor)
 
+        print(posts)
+
         cursor = cnx.cursor()
-        cursor.execute("SELECT HEX(Thread.author) FROM Thread WHERE id = UNHEX(%s)", (thread, ))
-        thread_author_id = cursor.next()[0]
+        cursor.execute("SELECT thread.author FROM thread WHERE thread_id = %s", (thread, ))
+        thread_author_id = cursor.fetchone()[0]
 
     finally:
         cnx.close()
@@ -213,34 +218,33 @@ def edit(edit_type, target_id):
     if user == None:
         flask.abort(401)
 
-    cnx = get_mysql_connection()
+    cnx = get_pg_connection()
     try:
         cursor = cnx.cursor()
 
         if edit_type == 'thread':
             cursor.execute(
-                "SELECT title, HEX(category), draft FROM Thread "
-                "WHERE id = UNHEX(%s) AND author = UNHEX(%s)",
+                "SELECT title, category, draft FROM thread "
+                "WHERE thread_id = %s AND author = %s",
                 (target_id, user)
             )
-            title, category, is_draft = cursor.next()
+            title, category, is_draft = cursor.fetchone()
 
-            cursor.execute("SELECT HEX(id) FROM Post WHERE Post.thread = UNHEX(%s) ORDER BY datetime LIMIT 0, 1",
-                           (target_id, ))
-            post_id = cursor.next()[0]
+            cursor.execute("SELECT post_id FROM post WHERE post.thread = %s ORDER BY datetime LIMIT 1 OFFSET 0",
+                           (target_id, ))            
+            post_id = cursor.fetchone()[0]
+            if not post_id:
+                flask.abort(404)
         else:
             post_id = target_id
-    except StopIteration:
-        cnx.close()
-        flask.abort(404)
     except:
         cnx.close()
         raise
         
     try:
         cursor = cnx.cursor()
-        cursor.execute("SELECT content, renderer FROM PostContent WHERE post = UNHEX(%s) ORDER BY datetime DESC LIMIT 0, 1", (post_id, ))
-        content, renderer = cursor.next()
+        cursor.execute("SELECT content, renderer FROM post_content WHERE post = %s ORDER BY datetime DESC LIMIT 1 OFFSET 0", (post_id, ))
+        content, renderer = cursor.fetchone()
     finally:
         cnx.close()
 

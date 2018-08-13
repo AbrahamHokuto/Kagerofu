@@ -1,5 +1,6 @@
 **/__pycache__/*
 config.json
+migrate.py
 authenticate/*
 kagerofu/prototype/*
 kagerofu/templates.old
