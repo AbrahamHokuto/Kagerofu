@@ -19,7 +19,7 @@
 	    # else
 	    # set reply_info = "<br>{} Replies".format(reply_count - 1)
 	    # endif
-	    <span class="info">{{ author }}<br>{{ last_modified.strftime("%B %d %Y %h:%m") }}{{ reply_info }}</span>
+	    <span class="info">{{ author }}<br>{{ last_modified.strftime("%b %d %Y %H:%M") }}{{ reply_info }}</span>
 	  </div>
 	</li>
 	# endfor
