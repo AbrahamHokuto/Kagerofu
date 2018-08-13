@@ -1,0 +1,66 @@
+@import "colors";
+
+#post-list {
+    display: inline-block;
+    list-style-type: none;
+    margin: 0;
+    padding: 50px 0;
+    vertical-align: top;
+    width: calc(100% - 225px);
+
+    .post {
+	background-color: white;
+	box-shadow: 0 0 10px black;
+	display: block;
+	padding: 20px;
+	margin-bottom: 10px;
+
+	.post-info {
+	    border-bottom: 1px solid $green;
+
+	    span {
+		line-height: 50px;
+		vertical-align: baseline;
+	    }
+
+	    img {
+		vertical-align: baseline;
+	    }
+
+	    span.color-green {
+		color: $green;
+	    }
+
+	    span.floor {
+		float: right;
+		width: 50px;
+		text-align: center;
+		vertical-align: middle;
+		display: block;
+		background-color: $green;
+		color: white;
+	    }
+
+	    a.edit {
+		float: right;
+		line-height: 50px;
+		text-align: center;
+		width: 50px;
+		margin-right: 10px;
+		background-color: $green;
+		color: white;
+		text-decoration: none;
+		font-family: sans-serif;
+
+		&:hover {
+		    background-color: $dark-green;
+		}
+	    }
+	}
+    }
+}
+
+#content {
+    text-align: justify;
+    font-family: serif;
+}

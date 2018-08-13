@@ -1,0 +1,63 @@
+@import "colors";
+
+#thread-list {
+    font-family: sans-serif;
+    width: calc(100% - 225px);
+    vertical-align: top;
+    display:inline-block;
+    
+    ul#threads {
+	list-style-type: none;
+	margin: 0;
+	padding: 50px 0;
+
+	li {
+	    display: block;
+	    background-color: white;
+	    height: 100px;
+	    margin-bottom: 10px;
+	    box-shadow: 0 0 10px black;
+
+	    a {
+		color: black;
+		h2 {
+		    margin: 0;
+		    line-height: 100px;
+		    vertical-align: middle;
+		    display: inline-block;
+		    float: left;
+		    padding: 0 20px;
+		    width: calc(100% - 305px);
+		    overflow: hidden;
+		    text-overflow: ellipsis;
+		    white-space: nowrap;
+		}
+
+		&:hover {
+		    color: $green;
+		}
+	    }
+
+	    div.thread-info {
+		margin: 0;
+		display: inline-block;
+		float: right;
+		padding: 0 20px;
+		width: 220px;
+		text-align: right;
+
+		span.info-before {
+		    display: inline-block;
+		    vertical-align: middle;
+		    height: 100px;
+		}
+		
+		span.info {
+		    display: inline-block;
+		    vertical-align: middle;
+		    text-align: right;
+		}
+	    }
+	}
+    }
+}

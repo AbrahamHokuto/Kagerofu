@@ -1,0 +1,20 @@
+@import "colors";
+@import "navbar";
+@import "title";
+@import "container";
+@import "thread_list";
+@import "post";
+@import "sidebar";
+@import "form";
+
+html {
+    background-color: $light-grey;
+    width: 100%;
+    height: 100%;
+}
+
+body {
+    margin: 0;
+    width: 100%;
+    height: 100%;
+}
