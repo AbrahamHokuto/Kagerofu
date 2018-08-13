@@ -264,5 +264,6 @@ def edit(edit_type, target_id):
         kwargs["thread_id"] = target_id
     else:
         kwargs["type"] = "edit_post"
+        kwargs["title"] = "Reply Edit"
         
     return render_template("edit.tmpl", **kwargs)
