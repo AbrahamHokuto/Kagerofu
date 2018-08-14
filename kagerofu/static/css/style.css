@@ -205,9 +205,6 @@ form {
       display: block;
       background-color: white; }
 
-#search-form {
-  box-shadow: none; }
-
 #form-wrapper-userinfo {
   display: inline-block;
   width: calc(100% - 230px);
@@ -262,7 +259,9 @@ ul#search-result-list {
     box-shadow: 0 0 10px black;
     margin-bottom: 10px; }
     ul#search-result-list li #search-form {
-      text-align: center; }
+      text-align: center;
+      padding: 0 50px;
+      box-shadow: none; }
       ul#search-result-list li #search-form #search-form-text {
         line-height: 26px;
         display: inline-block;
