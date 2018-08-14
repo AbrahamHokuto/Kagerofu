@@ -18,7 +18,7 @@
 	  <img src="https://www.gravatar.com/avatar/{{ avatar }}?s=40&d=identicon">
 	  <span class="color-green">{{ author }}</span><span class="post-info-datetime"> on </span><span class="color-green post-info-datetime">{{ datetime.strftime("%b %d %Y %H:%M") }}</span>
 	  <span class="floor">#{{ floor.floor }}</span>
-	  # if user_id == author_id
+	  # if user_id == author_id or admin
 	  # if floor.floor == 1
 	  # set type = "thread"
 	  # set target_id = thread_id

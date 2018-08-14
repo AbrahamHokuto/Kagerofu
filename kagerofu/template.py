@@ -22,15 +22,15 @@ def render_template(template, **kwargs):
         categories = list(cursor)
 
         cursor = cnx.cursor()
-        cursor.execute('SELECT nick, email FROM users WHERE user_id = %s', (cookie, ))
+        cursor.execute('SELECT nick, email, admin FROM users WHERE user_id = %s', (cookie, ))
 
         result = cursor.fetchone()
 
         if result:
-            user, avatar = result
+            user, avatar, admin = result
             avatar = hashlib.md5(avatar.strip().lower().encode("utf8")).hexdigest()
         else:
-            user, avatar = None, None
+            user, avatar, admin = None, None, None
 
     finally:
         cnx.close()
@@ -39,5 +39,6 @@ def render_template(template, **kwargs):
     kwargs["user"] = user
     kwargs["avatar"] = avatar
     kwargs["user_id"] = cookie
+    kwargs["admin"] = admin
 
     return flask.render_template(template, **kwargs)

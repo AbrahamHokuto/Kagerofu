@@ -222,17 +222,20 @@ def edit(edit_type, target_id):
 
         if edit_type == 'thread':
             cursor.execute(
-                "SELECT title, category, draft FROM thread "
-                "WHERE thread_id = %s AND author = %s",
+                "SELECT thread.title, thread.category, thread.draft, users.admin FROM thread, users "
+                "WHERE thread.thread_id = %s AND users.user_id = %s AND (thread.author = users.user_id OR users.admin = TRUE)",
                 (target_id, user)
             )
-            title, category, is_draft = cursor.fetchone()
+            title, category, is_draft, _ = cursor.fetchone()
 
-            cursor.execute("SELECT post_id FROM post WHERE post.thread = %s ORDER BY datetime LIMIT 1 OFFSET 0",
-                           (target_id, ))            
-            post_id = cursor.fetchone()[0]
+            cursor.execute("SELECT post.post_id, users.admin FROM post, users "
+                           "WHERE post.thread = %s AND users.user_id = %s AND (post.author = users.user_id OR users.admin = TRUE) "
+                           "ORDER BY datetime LIMIT 1 OFFSET 0",
+                           (target_id, user))
+            post_id = cursor.fetchone()
             if not post_id:
                 flask.abort(404)
+            post_id = post_id[0]
         else:
             post_id = target_id
     except:

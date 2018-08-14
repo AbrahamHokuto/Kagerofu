@@ -212,8 +212,8 @@ def edit(edit_type):
 
     cnx = get_pg_connection()
     try:
-        cursor = cnx.cursor()
-        cursor.execute("SELECT author FROM post WHERE post_id = %s AND author = %s",
+        cursor = cnx.cursor()        
+        cursor.execute("SELECT post.author, users.admin FROM post, users WHERE post.post_id = %s AND users.user_id = %s AND (post.author = users.user_id OR users.admin = TRUE)",
                        (post_id, user))
         if not cursor.fetchone():            
             cnx.close()
