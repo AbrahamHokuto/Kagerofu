@@ -180,8 +180,6 @@ def post(thread, page):
         cursor.execute(query, (thread, int((int(page) - 1) * config["paginator"]["post_per_page"])))
         posts = list(cursor)
 
-        print(posts)
-
         cursor = cnx.cursor()
         cursor.execute("SELECT thread.author FROM thread WHERE thread_id = %s", (thread, ))
         thread_author_id = cursor.fetchone()[0]
