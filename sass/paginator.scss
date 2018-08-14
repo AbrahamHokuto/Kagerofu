@@ -2,11 +2,18 @@
 
 #paginator ul {
     list-style-type: none;
-    padding: 0 0 50px 0;
     text-align: center;
     margin: auto;
     width: 100%;
     position: relative;
+
+    @media screen and (min-width: 800px) {
+	padding: 0 0 50px 0;
+    }
+    
+    @media screen and (max-width: 800px) {
+	padding: 0 0 20px 0;
+    }
 
     span {
 	line-height: 50px;

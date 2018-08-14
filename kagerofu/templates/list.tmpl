@@ -13,13 +13,13 @@
 	  <div class="thread-info">
 	    <span class="info-before"></span>
 	    # if reply_count == 2
-	    # set reply_info = "<br>{} Reply".format(reply_count - 1)
+	    # set reply_info = "{} Reply".format(reply_count - 1)
 	    # elif reply_count == 1
-	    # set reply_info = "<br>No Reply"
+	    # set reply_info = "No Reply"
 	    # else
-	    # set reply_info = "<br>{} Replies".format(reply_count - 1)
+	    # set reply_info = "{} Replies".format(reply_count - 1)
 	    # endif
-	    <span class="info">{{ author }}<br>{{ last_modified.strftime("%b %d %Y %H:%M") }}{{ reply_info }}</span>
+	    <span class="info"><p> {{ author }}</p><p> {{ last_modified.strftime("%b %d %Y %H:%M") }}</p><p class="reply-info"> {{ reply_info }}</p></span>
 	  </div>
 	</li>
 	# endfor

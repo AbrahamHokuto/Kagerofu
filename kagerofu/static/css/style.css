@@ -3,6 +3,9 @@ nav {
   box-shadow: 0 -5px 5px rgba(0, 0, 0, 0.1);
   height: 50px;
   font-family: sans-serif; }
+  @media screen and (max-width: 800px) {
+    nav {
+      display: none; } }
   nav ul {
     margin: 0;
     list-style-type: none;
@@ -26,16 +29,27 @@ nav {
 #title {
   background-color: #49724a;
   color: white;
-  text-align: center;
-  padding: 50px; }
+  text-align: center; }
+  @media screen and (max-width: 800px) {
+    #title {
+      padding: 20px;
+      box-shadow: 0 0 10px black; } }
+  @media screen and (min-width: 800px) {
+    #title {
+      padding: 50px;
+      box-shadow: none; } }
   #title h1 {
     margin: 0;
     display: block;
     font-family: sans-serif; }
 
-#container-wrapper {
-  max-width: 1030px;
-  margin: auto; }
+@media screen and (min-width: 1080px) {
+  #container-wrapper {
+    max-width: 1040px;
+    margin: auto; } }
+@media screen and (min-width: 800px) and (max-width: 1080px) {
+  #container-wrapper {
+    margin: 0 50px; } }
 
 #container {
   width: 100%;
@@ -43,13 +57,25 @@ nav {
 
 #thread-list {
   font-family: sans-serif;
-  width: calc(100% - 230px);
   vertical-align: top;
   display: inline-block; }
+  @media screen and (min-width: 800px) {
+    #thread-list {
+      margin: 0;
+      width: calc(100% - 230px); } }
+  @media screen and (max-width: 800px) {
+    #thread-list {
+      margin: 0 20px;
+      width: calc(100% - 40px); } }
   #thread-list ul#threads {
     list-style-type: none;
-    margin: 0;
-    padding: 50px 0; }
+    margin: 0; }
+    @media screen and (min-width: 800px) {
+      #thread-list ul#threads {
+        padding: 50px 0; } }
+    @media screen and (max-width: 800px) {
+      #thread-list ul#threads {
+        padding: 20px 0; } }
     #thread-list ul#threads li {
       display: block;
       background-color: white;
@@ -59,41 +85,80 @@ nav {
       #thread-list ul#threads li a {
         color: black; }
         #thread-list ul#threads li a h2 {
-          margin: 0;
-          line-height: 100px;
           vertical-align: middle;
-          display: inline-block;
           float: left;
           padding: 0 20px;
-          width: calc(100% - 305px);
           overflow: hidden;
           text-overflow: ellipsis;
           white-space: nowrap; }
+          @media screen and (min-width: 800px) {
+            #thread-list ul#threads li a h2 {
+              margin: 0;
+              width: calc(100% - 305px);
+              line-height: 100px;
+              display: inline-block; } }
+          @media screen and (max-width: 800px) {
+            #thread-list ul#threads li a h2 {
+              margin: 20px 0 0 0;
+              width: calc(100% - 40px);
+              line-height: normal;
+              display: block; } }
         #thread-list ul#threads li a:hover {
           color: #49724a; }
       #thread-list ul#threads li div.thread-info {
         margin: 0;
         display: inline-block;
         float: right;
-        padding: 0 20px;
-        width: 220px;
-        text-align: right; }
+        padding: 0 20px; }
+        @media screen and (min-width: 800px) {
+          #thread-list ul#threads li div.thread-info {
+            width: 220px;
+            text-align: right; } }
+        @media screen and (max-width: 800px) {
+          #thread-list ul#threads li div.thread-info {
+            width: calc(100% - 40px);
+            text-align: left; } }
         #thread-list ul#threads li div.thread-info span.info-before {
           display: inline-block;
           vertical-align: middle;
           height: 100px; }
+          @media screen and (max-width: 800px) {
+            #thread-list ul#threads li div.thread-info span.info-before {
+              display: none; } }
         #thread-list ul#threads li div.thread-info span.info {
           display: inline-block;
-          vertical-align: middle;
-          text-align: right; }
+          vertical-align: middle; }
+          @media screen and (min-width: 800px) {
+            #thread-list ul#threads li div.thread-info span.info {
+              text-align: right; } }
+          @media screen and (max-width: 800px) {
+            #thread-list ul#threads li div.thread-info span.info {
+              text-align: left; } }
+          #thread-list ul#threads li div.thread-info span.info p {
+            margin: 0; }
+            @media screen and (min-width: 800px) {
+              #thread-list ul#threads li div.thread-info span.info p {
+                display: normal; } }
+            @media screen and (max-width: 800px) {
+              #thread-list ul#threads li div.thread-info span.info p {
+                display: inline; }
+                #thread-list ul#threads li div.thread-info span.info p.reply-info {
+                  display: none; } }
 
 #post-list {
   display: inline-block;
   list-style-type: none;
-  margin: 0;
-  padding: 50px 0;
-  vertical-align: top;
-  width: calc(100% - 230px); }
+  vertical-align: top; }
+  @media screen and (min-width: 800px) {
+    #post-list {
+      margin: 0;
+      width: calc(100% - 230px);
+      padding: 50px 0; } }
+  @media screen and (max-width: 800px) {
+    #post-list {
+      margin: 0 20px;
+      width: calc(100% - 40px);
+      padding: 20px 0; } }
   #post-list .post {
     background-color: white;
     box-shadow: 0 0 10px black;
@@ -109,6 +174,9 @@ nav {
         vertical-align: baseline; }
       #post-list .post .post-info span.color-green {
         color: #49724a; }
+      @media screen and (max-width: 800px) {
+        #post-list .post .post-info span.post-info-datetime {
+          display: none; } }
       #post-list .post .post-info span.floor {
         float: right;
         width: 50px;
@@ -134,57 +202,85 @@ nav {
   text-align: justify;
   font-family: serif; }
   #content .highlight pre {
-    white-space: pre-wrap;
+    overflow: scroll;
     padding: 20px; }
 
 #sidebar {
-  display: inline-block;
-  width: 200px;
-  margin: 0 0 0 20px;
-  padding: 0;
   list-style-type: none;
-  padding: 50px 0;
   vertical-align: top; }
+  @media screen and (min-width: 800px) {
+    #sidebar {
+      display: inline-block;
+      width: 200px;
+      margin: 0 0 0 20px;
+      padding: 50px 0; } }
+  @media screen and (max-width: 800px) {
+    #sidebar {
+      width: calc(100% - 40px);
+      margin: 0 20px;
+      padding: 20px 0;
+      display: block; } }
   #sidebar li.sidebar-entry {
     box-shadow: 0 0 10px black;
     background-color: white;
-    margin-bottom: 10px;
+    margin: 0 0 10px 0;
     padding: 20px; }
   #sidebar #sidebar-userinfo {
     text-align: center; }
-  #sidebar #sidebar-categories {
+    @media screen and (max-width: 800px) {
+      #sidebar #sidebar-userinfo span {
+        display: block; } }
+  #sidebar .sidebar-form-wrapper {
     font-family: sans-serif; }
-    #sidebar #sidebar-categories h2 {
+    #sidebar .sidebar-form-wrapper h2 {
       margin: 0;
       font-size: 18px; }
-    #sidebar #sidebar-categories ul {
+    #sidebar .sidebar-form-wrapper ul {
       padding-left: 20px;
       list-style-type: none; }
-      #sidebar #sidebar-categories ul li a {
+      #sidebar .sidebar-form-wrapper ul li a {
         color: black;
         text-decoration: none; }
-        #sidebar #sidebar-categories ul li a:hover {
+        #sidebar .sidebar-form-wrapper ul li a:hover {
           color: #49724a; }
 
-#form-wrapper {
-  padding: 50px 0;
-  margin: auto; }
+@media screen and (min-width: 800px) {
+  #form-wrapper {
+    padding: 50px 0; } }
+@media screen and (max-width: 800px) {
+  #form-wrapper {
+    padding: 20px 0; } }
 
 form {
-  margin: auto;
   background-color: white;
   padding: 50px;
   box-shadow: 0 0 10px black;
   font-family: sans-serif; }
+  @media screen and (min-width: 800px) {
+    form {
+      margin: auto; } }
+  @media screen and (max-width: 800px) {
+    form {
+      margin: 20px; } }
   form span.form-error {
     color: white;
     background-color: #0E402D;
     display: block;
     text-align: center; }
-  form#login-form {
-    width: 480px; }
-  form#edit-form {
-    max-width: 640px; }
+  @media screen and (min-width: 800px) {
+    form#login-form {
+      max-width: 480px; } }
+  @media screen and (max-width: 800px) {
+    form#login-form {
+      margin: 20px; } }
+  @media screen and (min-width: 800px) {
+    form#edit-form {
+      max-width: 640px; } }
+  @media screen and (max-width: 800px) {
+    form#edit-form {
+      margin: 20px; } }
+  form#reply-form {
+    margin: 0; }
   form .input-group {
     margin-bottom: 15px; }
     form .input-group input {
@@ -206,9 +302,16 @@ form {
       background-color: white; }
 
 #form-wrapper-userinfo {
-  display: inline-block;
-  width: calc(100% - 230px);
-  padding: 50px 0 0 0; }
+  display: inline-block; }
+  @media screen and (min-width: 800px) {
+    #form-wrapper-userinfo {
+      width: calc(100% - 230px);
+      padding: 50px 0 0 0; } }
+  @media screen and (max-width: 800px) {
+    #form-wrapper-userinfo {
+      width: calc(100% - 40px);
+      padding: 20px 0 0 0;
+      margin: 0 20px; } }
   #form-wrapper-userinfo #userinfo-form {
     margin: 0;
     display: inline-block;
@@ -216,11 +319,16 @@ form {
 
 #paginator ul {
   list-style-type: none;
-  padding: 0 0 50px 0;
   text-align: center;
   margin: auto;
   width: 100%;
   position: relative; }
+  @media screen and (min-width: 800px) {
+    #paginator ul {
+      padding: 0 0 50px 0; } }
+  @media screen and (max-width: 800px) {
+    #paginator ul {
+      padding: 0 0 20px 0; } }
   #paginator ul span {
     line-height: 50px;
     background-color: white;
@@ -247,11 +355,19 @@ form {
         background-color: #0E402D; }
 
 ul#search-result-list {
-  width: calc(100% - 230px);
-  display: inline-block;
-  list-style-type: none;
-  padding: 50px 0;
-  margin: 0; }
+  list-style-type: none; }
+  @media screen and (min-width: 800px) {
+    ul#search-result-list {
+      display: inline-block;
+      width: calc(100% - 230px);
+      padding: 50px 0;
+      margin: 0; } }
+  @media screen and (max-width: 800px) {
+    ul#search-result-list {
+      width: calc(100% - 40px);
+      display: block;
+      padding: 0;
+      margin: 20px; } }
   ul#search-result-list li {
     display: block;
     background-color: white;
@@ -260,8 +376,13 @@ ul#search-result-list {
     margin-bottom: 10px; }
     ul#search-result-list li #search-form {
       text-align: center;
-      padding: 0 50px;
       box-shadow: none; }
+      @media screen and (min-width: 800px) {
+        ul#search-result-list li #search-form {
+          padding: 0 50px; } }
+      @media screen and (max-width: 800px) {
+        ul#search-result-list li #search-form {
+          padding: 0; } }
       ul#search-result-list li #search-form #search-form-text {
         line-height: 26px;
         display: inline-block;

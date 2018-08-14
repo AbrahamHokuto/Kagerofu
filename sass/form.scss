@@ -1,16 +1,28 @@
 @import "colors";
 
 #form-wrapper {
-    padding: 50px 0;
-    margin: auto;    
+    @media screen and (min-width: 800px) {
+	padding: 50px 0;
+    }
+    
+    @media screen and (max-width: 800px) {
+	padding: 20px 0;
+    }
 }
 
 form {
-    margin: auto;
     background-color: white;
     padding:50px;
     box-shadow: 0 0 10px black;
     font-family: sans-serif;
+
+    @media screen and (min-width: 800px) {
+	margin: auto;
+    }
+
+    @media screen and (max-width: 800px) {
+	margin: 20px;
+    }
 
     span.form-error {
 	color: white;
@@ -21,11 +33,27 @@ form {
 
     
     &#login-form {
-	width: 480px;
+	@media screen and (min-width: 800px) {
+	    max-width: 480px;
+	}
+
+	@media screen and (max-width: 800px) {
+	    margin: 20px;
+	}
     }
 
     &#edit-form {
-	max-width: 640px;
+	@media screen and (min-width: 800px) {
+	    max-width: 640px;
+	}
+	
+	@media screen and (max-width: 800px) {
+	    margin: 20px;
+	}
+    }
+
+    &#reply-form {
+	margin: 0;
     }
 
     .input-group {
@@ -58,8 +86,17 @@ form {
 
 #form-wrapper-userinfo{
     display: inline-block;
-    width: calc(100% - 230px);
-    padding: 50px 0 0 0;
+
+    @media screen and (min-width: 800px) {
+	width: calc(100% - 230px);
+	padding: 50px 0 0 0;
+    }
+
+    @media screen and (max-width: 800px) {
+	width: calc(100% - 40px);
+	padding: 20px 0 0 0;
+	margin: 0 20px;
+    }
 
     #userinfo-form {
 	margin: 0;

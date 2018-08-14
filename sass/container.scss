@@ -1,6 +1,12 @@
 #container-wrapper {
-    max-width: 1030px;
-    margin: auto;
+    @media screen and (min-width: 1080px) {
+	max-width: 1040px;
+	margin: auto;	    
+    }
+
+    @media screen and (min-width: 800px) and (max-width: 1080px) {
+	margin: 0 50px;
+    }
 }
 
 #container {

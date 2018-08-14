@@ -2,14 +2,30 @@
 
 #thread-list {
     font-family: sans-serif;
-    width: calc(100% - 230px);
     vertical-align: top;
     display:inline-block;
+
+    @media screen and (min-width: 800px) {
+	margin: 0;
+	width: calc(100% - 230px);
+    }
+
+    @media screen and (max-width: 800px) {
+	margin: 0 20px;
+	width: calc(100% - 40px);
+    }
     
     ul#threads {
 	list-style-type: none;
 	margin: 0;
-	padding: 50px 0;
+
+	@media screen and (min-width: 800px) {
+	    padding: 50px 0;
+	}
+
+	@media screen and (max-width: 800px) {
+	    padding: 20px 0;
+	}
 
 	li {
 	    display: block;
@@ -21,16 +37,26 @@
 	    a {
 		color: black;
 		h2 {
-		    margin: 0;
-		    line-height: 100px;
 		    vertical-align: middle;
-		    display: inline-block;
 		    float: left;
 		    padding: 0 20px;
-		    width: calc(100% - 305px);
 		    overflow: hidden;
 		    text-overflow: ellipsis;
 		    white-space: nowrap;
+
+		    @media screen and (min-width: 800px) {
+			margin: 0;
+			width: calc(100% - 305px);
+			line-height: 100px;
+			display: inline-block;
+		    }
+
+		    @media screen and (max-width: 800px) {
+			margin: 20px 0 0 0;
+			width: calc(100% - 40px);
+			line-height: normal;
+			display: block;
+		    }
 		}
 
 		&:hover {
@@ -43,19 +69,52 @@
 		display: inline-block;
 		float: right;
 		padding: 0 20px;
-		width: 220px;
-		text-align: right;
+
+		@media screen and (min-width: 800px) {
+		    width: 220px;
+		    text-align: right;
+		}
+
+		@media screen and (max-width: 800px) {
+		    width: calc(100% - 40px);
+		    text-align: left;
+		}
 
 		span.info-before {
 		    display: inline-block;
 		    vertical-align: middle;
 		    height: 100px;
+
+		    @media screen and (max-width: 800px) {
+			display: none;
+		    }
 		}
 		
 		span.info {
 		    display: inline-block;
 		    vertical-align: middle;
-		    text-align: right;
+		    @media screen and (min-width: 800px) {
+			text-align: right;
+		    }
+
+		    @media screen and (max-width: 800px) {
+			text-align: left;
+		    }
+		    
+		    p {
+			margin: 0;
+
+			@media screen and (min-width: 800px) {
+			    display: normal;
+			}
+
+			@media screen and (max-width: 800px) {
+			    display: inline;
+			    &.reply-info {
+				display: none;
+			    }
+			}
+		    }
 		}
 	    }
 	}
