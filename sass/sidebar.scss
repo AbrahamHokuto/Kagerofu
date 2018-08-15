@@ -16,13 +16,30 @@
 	margin: 0 20px;
 	padding: 20px 0;
 	display: block;
+	white-space: nowrap;
+	overflow: scroll;
     }
 
     li.sidebar-entry {
 	box-shadow: 0 0 10px black;
 	background-color: white;
-	margin: 0 0 10px 0;
 	padding: 20px;
+
+	overflow: scroll;
+
+	@media screen and (min-width: 800px) {
+	    display: block;
+	    width: 160px;
+	    height: fit-content;
+	    margin: 0 0 10px 0;	    
+	}
+
+	@media screen and (max-width: 800px) {
+	    display: inline-block;
+	    width: 200px;
+	    height: 200px;
+	    margin: 0 10px 10px ;
+	}
     }
 
     #sidebar-userinfo {

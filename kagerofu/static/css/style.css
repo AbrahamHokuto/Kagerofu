@@ -42,6 +42,9 @@ nav {
     margin: 0;
     display: block;
     font-family: sans-serif; }
+    #title h1 a {
+      color: white;
+      text-decoration: none; }
 
 @media screen and (min-width: 1080px) {
   #container-wrapper {
@@ -219,12 +222,26 @@ nav {
       width: calc(100% - 40px);
       margin: 0 20px;
       padding: 20px 0;
-      display: block; } }
+      display: block;
+      white-space: nowrap;
+      overflow: scroll; } }
   #sidebar li.sidebar-entry {
     box-shadow: 0 0 10px black;
     background-color: white;
-    margin: 0 0 10px 0;
-    padding: 20px; }
+    padding: 20px;
+    overflow: scroll; }
+    @media screen and (min-width: 800px) {
+      #sidebar li.sidebar-entry {
+        display: block;
+        width: 160px;
+        height: fit-content;
+        margin: 0 0 10px 0; } }
+    @media screen and (max-width: 800px) {
+      #sidebar li.sidebar-entry {
+        display: inline-block;
+        width: 200px;
+        height: 200px;
+        margin: 0 10px 10px; } }
   #sidebar #sidebar-userinfo {
     text-align: center; }
     @media screen and (max-width: 800px) {
