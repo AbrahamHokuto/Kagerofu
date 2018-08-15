@@ -25,7 +25,6 @@
 	# endfor
       </select>
     </div>
-    # endif    
     <div class="input-group">
       <label>Status</label>
       <select name="draft">
@@ -36,6 +35,7 @@
 	<option value="0" {{ published_selected }}>Published</option>
       </select>
     </div>
+    # endif
     <div class="input-group">
       <label>Renderer</label>
       <select name="renderer">

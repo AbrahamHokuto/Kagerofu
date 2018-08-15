@@ -17,8 +17,12 @@ from kagerofu import config
 def render_content(renderer, content):
     def renderer_markdown(content):
         class HighlighterRenderer(misaka.HtmlRenderer):
-            def blockcode(self, text, lang):
+            def blockcode(self, text, lang):                
                 text = text.replace('\n\n', '\n')
+
+                if lang == "math":
+                    return text;
+
                 try:
                     lexer = pygments.lexers.get_lexer_by_name(lang, stripall=True)
                 except pygments.util.ClassNotFound:
@@ -34,21 +38,20 @@ def render_content(renderer, content):
                 return '\n<pre><code>{}</code></pre>\n'.format(html.escape(text.strip()))
                         
         def escape_formula(formula):
-            return re.sub(r"([_*\\{}()])", r"\\\1", formula, flags=re.M)
-
+            return re.sub(r"([_*\{}()])", r"\\\1", formula, flags=re.M)
+            
         def remove_unnecessary_slash(formula):
             return re.sub(r"\\([_*\\{}()])", r"\1", formula, flags=re.M)
-
+        
         content = content.replace("\n", "\n\n")
         content = re.sub(r"(\\\((.+?)\\\))", lambda m: escape_formula(m.group(1)), content, flags=re.M)
         content = re.sub(r"(\$(.+?)\$)", lambda m: escape_formula(m.group(1)), content, flags=re.M)
-        content = re.sub(r"```math(.*?)```", r"\1", content, flags=re.M)
-
+        
         renderer = HighlighterRenderer(("escape", ))
         markdown = misaka.Markdown(renderer, ( 'fenced-code', 'strikethrough' ))
-
+        
         content = markdown(content)
-
+        
         content = re.sub(r'(\\\((.+?)\\\))', lambda m: remove_unnecessary_slash(m.group(1)), content, flags=re.M)
         content = re.sub(r'(\$(.+?)\$)', lambda m: remove_unnecessary_slash(m.group(1)), content, flags=re.M)
         

@@ -78,7 +78,10 @@
 #content {
     text-align: justify;
     font-family: serif;
-
+    word-wrap: break-word;
+    word-break: break-all;
+    hyphens: auto;
+    
     .highlight pre {
 	overflow: scroll;
 	padding: 20px;
