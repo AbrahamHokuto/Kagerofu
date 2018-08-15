@@ -304,7 +304,6 @@ def userinfo():
         return render_template("userinfo.tmpl", error=False, name=name, email=email, nick=nick, title="User Info")
     else:
         try:
-            name = flask.request.form["name"]
             email = flask.request.form["email"]
             nick = flask.request.form["nick"]
             old_password = flask.request.form["old_password"]
