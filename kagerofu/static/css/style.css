@@ -231,7 +231,8 @@ nav {
   #sidebar li.sidebar-entry {
     box-shadow: 0 0 10px black;
     background-color: white;
-    padding: 20px; }
+    padding: 20px;
+    vertical-align: top; }
     @media screen and (min-width: 800px) {
       #sidebar li.sidebar-entry {
         display: block;
