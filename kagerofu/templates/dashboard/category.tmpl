@@ -1,0 +1,46 @@
+/// -*- mode: jinja2 -*-
+
+# extends "dashboard/base.tmpl"
+
+# block content
+<div id="dashboard-title">
+  <h1>分类管理</h1>
+</div>
+
+<form id="dashboard-new-category-form" class="dashboard-form" method="POST", action="category/new">
+  <h2>新建分类</h2>
+  <div class="input-group">
+    <label>分类名称</label>
+    <input type="text" name="name">
+  </div>
+</form>
+
+<form id="dashboard-merge-category-form" class="dashboard-form" method="POST", action="category/merge">
+  <h2>合并分类</h2>
+  <div class="input-group">
+    <label>将</label>
+    <select name="src">
+      # for name, id in categories
+      <option value="{{ id }}">{{ name }}</option>
+      # endfor
+    </select>    
+  </div>
+  <div class="input-group">
+    <label>合并至</label>
+    <select name="dst">
+      # for name, id in categories
+      <option value="{{ id }}">{{ name }}</option>
+      # endfor
+    </select>
+  </div>
+  <input type="submit" value="提交">
+</form>
+
+<ul id="dashboard-category-list">
+  <h2>现有分类：</h2>
+  # for name, id in categories
+  <li>{{ name }}</li>
+  # endfor
+</ul>
+
+# endblock

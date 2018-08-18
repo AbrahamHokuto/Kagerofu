@@ -6,7 +6,7 @@
     <meta charset="utf8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/static/css/style.css">
-    <title>{{ title }} -- Chikyuu School</title>
+    <title>{{ title }} -- 耻球学派・改三</title>
   </head>
   <body>
     <div id="title">
@@ -14,21 +14,24 @@
     </div>
     <nav>
       <ul>
-	<li><a href="/">Index</a></li>
-	/// <li><a href="/categories">Categories</a></li>
+	<li><a href="/">主页</a></li>
+	/// <li><a href="/categories">分类</a></li>
 	# if user
-	<li><a href="/drafts">Drafts</a></li>
+	<li><a href="/drafts">草稿</a></li>
 	# endif
-	<li><a href="/search">Search</a></li>
+	<li><a href="/search">搜索</a></li>
+	# if admin
+	<li><a href="/dashboard">大本营</a></li>
+	# endif
 	/// <li><a href="/notifications">Notifications</a></li>
       </ul>
       <ul class="float-right">
 	# if not user
-	<li><a href="/register">Register</a></li>
-	<li><a href="/login">Login</a></li>
+	<li><a href="/registration">注册</a></li>
+	<li><a href="/login">登录</a></li>
 	# else
-	<li><a href="/new">New Thread</a></li>
-	<li><a href="/logout">Logout</a></li>
+	<li><a href="/new">新主题</a></li>
+	<li><a href="/logout">注销</a></li>
 	# endif
       </ul>
     </nav>

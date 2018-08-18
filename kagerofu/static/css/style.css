@@ -188,7 +188,7 @@ nav {
         display: block;
         background-color: #49724a;
         color: white; }
-      #post-list .post .post-info a.edit {
+      #post-list .post .post-info a.button {
         float: right;
         line-height: 50px;
         text-align: center;
@@ -198,7 +198,7 @@ nav {
         color: white;
         text-decoration: none;
         font-family: sans-serif; }
-        #post-list .post .post-info a.edit:hover {
+        #post-list .post .post-info a.button:hover {
           background-color: #0E402D; }
 
 #content {
@@ -430,6 +430,147 @@ ul#search-result-list {
       text-align: justify; }
       ul#search-result-list li p span.keyword {
         color: #49724a; }
+
+html#dashboard {
+  background-color: white; }
+
+#dashboard-brand {
+  position: fixed;
+  margin: 0;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 70px;
+  padding: 20px 0;
+  color: white;
+  background-color: #0E402D; }
+  #dashboard-brand h1 {
+    margin: 0;
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+    line-height: 70px;
+    vertical-align: middle;
+    font-family: sans-serif; }
+
+#dashboard-sidebar {
+  position: fixed;
+  width: 200px;
+  top: 0;
+  bottom: 0;
+  left: 70px;
+  background-color: #C5C5C5; }
+  #dashboard-sidebar ul {
+    display: block;
+    padding: 0;
+    list-style-type: none;
+    font-family: sans-serif; }
+    #dashboard-sidebar ul li img {
+      margin: 0 20px; }
+    #dashboard-sidebar ul li span {
+      display: block;
+      color: black;
+      width: 100%;
+      height: 30px;
+      margin: 10px 0;
+      text-align: center;
+      padding: 0 5px; }
+    #dashboard-sidebar ul li a {
+      display: block;
+      color: black;
+      width: calc(100% - 50px);
+      height: 30px;
+      margin: 10px 0;
+      text-decoration: none;
+      padding: 0 25px; }
+      #dashboard-sidebar ul li a:hover {
+        background-color: #0E402D;
+        color: white; }
+
+#dashboard-container {
+  margin-left: 270px;
+  padding: 50px; }
+  #dashboard-container .table-wrapper {
+    display: inline-block;
+    width: 450px;
+    margin-right: 20px;
+    vertical-align: top; }
+  #dashboard-container table {
+    border-spacing: 0;
+    text-align: left;
+    font-family: sans-serif;
+    width: 100%;
+    display: table;
+    table-layout: fixed; }
+    #dashboard-container table thead th {
+      border-bottom: 2px solid #49724a;
+      padding-left: 8px; }
+    #dashboard-container table tbody td {
+      padding: 8px;
+      border-bottom: 1px solid #49724a;
+      word-wrap: break-word;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      width: 84px; }
+  #dashboard-container #user-list-table {
+    margin: auto;
+    width: 500px; }
+
+.dashboard-form {
+  margin: auto;
+  box-shadow: none;
+  width: 480px; }
+  .dashboard-form span#dashboard-sudo-error-span {
+    color: white;
+    background-color: #0E402D;
+    text-align: center;
+    width: 100%;
+    display: block; }
+
+#dashboard-sudo-form {
+  margin-top: 300px; }
+
+#dashboard-user-search-form {
+  margin-top: 100px; }
+
+#dashboard-userinfo {
+  background-color: #0E402D;
+  color: white;
+  width: fit-content;
+  margin: auto;
+  padding: 50px 0; }
+  #dashboard-userinfo #dashboard-userinfo-header {
+    text-align: center; }
+    #dashboard-userinfo #dashboard-userinfo-header span {
+      display: block; }
+  #dashboard-userinfo #dashboard-userinfo-form {
+    background-color: inherit; }
+    #dashboard-userinfo #dashboard-userinfo-form .input-radio {
+      display: inline-block;
+      width: auto; }
+
+#dashboard-new-category-form {
+  padding: 10px 50px; }
+
+#dashboard-merge-category-form {
+  padding: 10px 50px; }
+
+#dashboard-category-list {
+  display: block;
+  margin: auto;
+  padding: 10px;
+  list-style-type: none;
+  width: 480px;
+  font-family: sans-serif; }
+  #dashboard-category-list h2 {
+    margin: 0; }
+  #dashboard-category-list li {
+    padding-left: 30px; }
+
+#log-table-wrapper {
+  margin: auto !important;
+  display: block !important;
+  width: fit-content !important; }
 
 html {
   background-color: #C5C5C5;

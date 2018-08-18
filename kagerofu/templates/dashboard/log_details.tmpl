@@ -1,0 +1,92 @@
+/// -*- mode:jinja2 -*-
+
+# extends "dashboard/base.tmpl"
+
+# block content
+
+# set id, type, operator, datetime, data, name = details
+
+<div id="dashboard-title">
+  <h1>日志细节：{{ log_type_to_string(type) }}</h1>
+</div>
+
+<div id="log-detail-wrapper">
+  # if type == "update_userinfo"
+  <table id="userinfo-table" class="dashboard-table">
+    <thead>
+      <tr>
+	<th>项目</th>
+	<th>旧值</th>
+	<th>新值</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+	<td>昵称</td>
+	<td>{{ data["nick"][0] }}</td>
+	<td>{{ data["nick"][1] }}</td>
+      </tr>
+      <tr>
+	<td>Email</td>
+	<td>{{ data["email"][0] }}</td>
+	<td>>{{ data["email"][1] }}</td>
+      </tr>
+    </tbody>
+  </table>
+  # elif type == "update_profile"
+  <table id="user-profile-data">
+    <thead>
+      <tr>
+	<th>项目</th>
+	<th>旧值</th>
+	<th>新值</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+	<td>昵称</td>
+	<td>{{ data["original"]["nick"] }}</td>
+	<td>{{ data["new"]["nick"] }}</td>
+      </tr>
+      <tr>
+	<td>Email</td>
+	<td>{{ data["original"]["email"] }}</td>
+	<td>{{ data["new"]["email"] }}</td>
+      </tr>
+      <tr>
+	<td>超级用户</td>
+	<td>{{ "是" if data["original"]["superuser"] else "否" }}</td>
+	<td>{{ "是" if data["new"]["superuser"] else "否" }}</td>
+      </tr>
+    </tbody>
+  </table>
+  # elif type in ["delete", "restore"]
+  <table id="deleted-post-table">
+    <thead>
+      <tr>
+	# if data["type"] == "thread"
+	# set type_display = "主题"
+	# else
+	# set type_display = "回复"
+	# endif
+	<th>ID</th>
+	<th>类型</th>
+	<th>操作</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+	<td><a href="/{{ data["type"] }}/view/{{ data["id"] }}">{{ data["id"] }}</a></td>
+	<td>{{ type_display }}</td>
+	# if type == "delete"
+	<td><a href="/dashboard/restore/{{ data["type"] }}?target={{ data["id"] }}">恢复</a></td>
+	# else
+	<td></td>
+	# endif
+      </tr>
+    </tbody>
+  </table>
+  # endif  
+</div>
+
+# endblock

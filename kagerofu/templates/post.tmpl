@@ -26,7 +26,10 @@
 	  # set type = "post"
 	  # set target_id = id
 	  # endif
-	  <a class="edit" href="/{{ type }}/edit/{{ target_id }}">Edit</a>
+	  <a class="button" href="/{{ type }}/edit/{{ target_id }}">编辑</a>
+	  # endif
+	  # if admin	  
+	  <a class="button" href="/dashboard/delete/{{ type }}?target={{ target_id }}">删除</a>
 	  # endif
 	</div>
 	<div id="content">

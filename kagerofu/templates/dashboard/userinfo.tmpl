@@ -1,0 +1,44 @@
+/// -*- mode:jinja2 -*-
+
+# extends "dashboard/base.tmpl"
+
+# block content
+
+<div id="dashboard-title">
+  <h1>用户档案：{{ nick }}</h1>
+</div>
+
+<div id="dashboard-userinfo">
+  <div id="dashboard-userinfo-header">
+    <img src="//www.gravatar.com/avatar/{{ user_avatar }}?s=200&d=identicon">
+    <span id="userinfo-nick">{{ nick }}<span>
+  </div>
+  <form id="dashboard-userinfo-form" class="dashboard-form" method="POST" action="/dashboard/userinfo_update">
+    <div class="input-group">
+      <label>用户名</label>
+      <input type="text" value="{{ username }}" disabled>
+    </div>
+    <div class="input-group">
+      <label>昵称</label>
+      <input type="text" name="nick" value="{{ nick }}">
+    </div>
+    <div class="input-group">
+      <label>Email</label>
+      <input type="text" name="email" value="{{ email }}">
+    </div>
+    <div class="input-group">
+      <label>超级用户</label>
+      # if user_is_admin
+      # set true_checked = "checked"
+      # else
+      # set false_checked = "checked"
+      # endif
+      <input type="radio" class="input-radio" name="superuser" value="true" {{ true_checked }}>是
+      <input type="radio" class="input-radio" name="superuser" value="false" {{ false_checked }}>否
+      <input type="hidden" name="id" value="{{ userid }}">
+    </div>
+    <input type="submit" value="更新档案">
+  </form>  
+</div>
+
+# endblock

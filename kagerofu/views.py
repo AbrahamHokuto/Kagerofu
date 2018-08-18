@@ -79,6 +79,13 @@ def list_threads(order, page, category = None, author = None, draft = False):
     category_sql = "AND thread.category = %s" if category else ''
     author_sql = "AND thread.author = %s" if author else ''
 
+    try:
+        sudo_mode = read_cookie(flask.request.cookies["sudo_mode"])
+    except KeyError:
+        sudo_mode = None
+
+    hidden = bool(sudo_mode)
+
     query = (
         "SELECT thread.thread_id, thread.title, thread.datetime AS publish_datetime, "
         "users.nick, MAX(post.last_modified) AS last_modified, "
@@ -116,7 +123,7 @@ def list_threads(order, page, category = None, author = None, draft = False):
             
             category_name, = category_cursor.fetchone()
             
-            title = "Category: " + category_name
+            title = "分类: " + category_name
 
         else:
             if author:
@@ -129,7 +136,7 @@ def list_threads(order, page, category = None, author = None, draft = False):
             else:
                 page_cursor.execute(page_query, (draft, ))
 
-            title = "Index"
+            title = "主页"
 
         total_pages, = page_cursor.fetchone()
         total_pages = int((total_pages - 1) / config["paginator"]["thread_per_page"] + 1)
@@ -159,8 +166,19 @@ def category_list(category, order, page):
 
 @bp.route('/thread/view/<thread>/<page>')
 def post(thread, page):
+    user = flask.request.cookies.get("session")
+    if user != None and read_cookie(user) != None:
+        user = read_cookie(user)
+
     cnx = get_pg_connection()
     try:
+        if user:
+            cursor = cnx.cursor()
+            cursor.execute("SELECT admin FROM users WHERE user_id = %s", (user, ))
+            admin, = cursor.fetchone()
+        else:
+            admin = False
+            
         cursor = cnx.cursor()
         cursor.execute("SELECT title FROM thread WHERE thread_id = %s", (thread, ))
         title = cursor.fetchone()[0]
@@ -168,6 +186,13 @@ def post(thread, page):
         cursor = cnx.cursor()
         cursor.execute("SELECT COUNT(*) FROM post WHERE thread = %s", (thread, ))
         post_count = cursor.fetchone()[0]
+
+        cursor = cnx.cursor()
+        cursor.execute("SELECT hidden FROM thread WHERE thread_id = %s", (thread, ))
+        hidden, = cursor.fetchone()
+
+        if hidden and not admin:
+            flask.abort(404)
 
         query = (
             "SELECT post.post_id, users.nick, post.author, "
@@ -191,11 +216,43 @@ def post(thread, page):
         cnx.close()
         
     total_pages = int((post_count - 1) / config["paginator"]["post_per_page"] + 1)
-    return render_template("post.tmpl", posts = posts,
+    return render_template("post.tmpl", posts = posts, thread_hidden = hidden,
                            page = int(page), total_pages = total_pages,
                            thread_author_id = thread_author_id,
                            baseurl = "/thread/view/{}".format(thread), post_per_page = config["paginator"]["post_per_page"],
                            render_content = render_content, title = title, thread_id = thread)
+
+@bp.route('/post/view/<post_id>')
+def deleted_post(post_id):
+    user = flask.request.cookies.get("session")
+    if user != None and read_cookie(user) != None:
+        user = read_cookie(user)
+
+    cnx = get_pg_connection()
+    try:
+        if user:
+            cursor = cnx.cursor()
+            cursor.execute("SELECT admin FROM users WHERE user_id = %s", (user, ))
+            admin, = cursor.fetchone()
+        else:
+            admin = False
+
+        if not admin:
+            flask.abort(404)
+
+        cursor = cnx.cursor()
+        cursor.execute("select post.post_id, users.nick, post.author, "
+                       "LOWER(MD5(TRIM(LOWER(users.email)))), "
+                       "post_content.content, post_content.datetime, post_content.renderer FROM post, users, post_content "
+                       "WHERE post.author = users.user_id "
+                       "AND post.content = post_content.content_id "
+                       "AND post.post_id = %s", (post_id, ))
+        posts = cursor.fetchall()
+    finally:
+        cnx.close()
+        return render_template("post.tmpl", posts = posts,
+                               page = 1, post_per_page = 1, total_pages = 1,
+                               render_content = render_content, title = "被删除的回复")
 
 @bp.route('/drafts/<order>/<page>')
 def drafts(order, page):
@@ -262,12 +319,12 @@ def edit(edit_type, target_id):
     if edit_type == "thread":
         print(title)
         kwargs["type"] = "edit_thread"
-        kwargs["title"] = title
+        kwargs["title"] = "编辑主题：" + title
         kwargs["current_category_id"] = category
         kwargs["draft"] = is_draft
         kwargs["thread_id"] = target_id
     else:
         kwargs["type"] = "edit_post"
-        kwargs["title"] = "Reply Edit"
+        kwargs["title"] = "编辑回复"
         
     return render_template("edit.tmpl", **kwargs)

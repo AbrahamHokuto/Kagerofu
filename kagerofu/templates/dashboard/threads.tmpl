@@ -1,0 +1,44 @@
+/// -*- mode: jinja2 -*-
+
+# extends "dashboard/base.tmpl"
+
+# block content
+
+<div id="dashboard-title">
+  <h1>主题管理</h1>
+</div>
+
+<form id="dashboard-thread-search-form" class="dashboard-form" method="GET" action="/dashboard/threads">
+  <div class="input-group">
+    <label>搜索主题</label>
+    <input type="text" name="s">
+  </div>
+</form>
+
+# if threads
+<table id="thread-list-table" class="dashboard-table">
+  <caption>主题列表</caption>
+  <thead>
+    <tr>
+      <th>标题</th>
+      <th>状态</th>
+      <th>操作</th>
+    </tr>
+  </thead>
+  <tbody>
+    # for name, hidden, id in threads
+    <tr>
+      <td>{{ name }}</td>
+      <td>{{ "删除" if hidden else "正常" }}</td>
+      # if hidden
+      <td><a href="/dashboard/threads/restore?id={{ id }}">恢复</a></td>
+      # else
+      <td><a href="/dashboard/threads/delete?id={{ id }}">删除</a></td>
+      # endif
+    </tr>
+    # endfor
+  </tbody>
+</table>
+# endif
+
+# endblock

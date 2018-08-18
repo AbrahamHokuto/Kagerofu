@@ -16,6 +16,11 @@ def render_template(template, **kwargs):
         cookie = None
 
     try:
+        sudo_mode = read_cookie(flask.request.cookies["sudo_mode"])
+    except KeyError:
+        sudo_mode = None    
+
+    try:
         cnx = get_pg_connection()
         cursor = cnx.cursor()
         cursor.execute('SELECT name, category_id FROM category ORDER BY category_id')
@@ -40,5 +45,6 @@ def render_template(template, **kwargs):
     kwargs["avatar"] = avatar
     kwargs["user_id"] = cookie
     kwargs["admin"] = admin
+    kwargs["sudo"] = sudo_mode
 
     return flask.render_template(template, **kwargs)

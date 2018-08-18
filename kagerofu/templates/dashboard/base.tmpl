@@ -1,0 +1,35 @@
+/// -*- mode:jinja2 -*-
+
+<!DOCTYPE html>
+<html id="dashboard">
+  <head>
+    <meta charset="utf8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>大本営 -- Chikyuu School</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+  </head>
+  <body>
+    <div id="dashboard-brand">
+      <h1>大本営 -- Chikyuu School</a></h1>
+    </div>
+
+    <div id="dashboard-sidebar">
+      <ul>
+	<li><img src="https://www.gravatar.com/avatar/{{ avatar }}?s=160&d=identicon"></li>
+	<li><span>{{ user }}</span></li>
+	<li><a href="/dashboard/">主页</a></li>
+	<li><a href="/dashboard/users">用户</a></li>
+	/// <li><a href="/dashboard/posts">回帖</a></li>
+	/// <li><a href="/dashboard/threads">主题</a></li>
+	<li><a href="/dashboard/category">分类</a></li>
+	<li><a href="/dashboard/log">日志</a></li>
+	<li><a href="/dashboard/logout">退出</a></li>
+      </ul>
+    </div>
+
+    <div id="dashboard-container">
+      {% block content %}{% endblock %}
+    </div>
+    
+  </body>
+</html>

@@ -1,0 +1,53 @@
+/// -*- mode:jinja2 -*-
+
+# extends "dashboard/base.tmpl"
+
+# block content
+
+<div id="dashboard-title">
+  <h1>欢迎，{{ user }}</h1>
+</div>
+
+<div class="table-wrapper">
+  <table id="recent-events-table" class="dashboard-table">
+    <caption><h2>最新事件<h2></caption>
+    <thead>
+      <tr>
+	<th>类型</th>
+	<th>来自</th>
+	<th>备注</th>
+      </tr>
+    </thead>
+    <tbody>
+      # for type, name, data in recent_events
+      <tr>
+	<td>{{ log_type_to_string(type) }}</td>
+	<td>{{ name }}</td>
+	<td>{{ log_data_simple(type, data) }}</td>
+      </tr>      
+      # endfor
+    </tbody>
+  </table>
+</div>
+
+<div class="table-wrapper">
+  <table id="recent-access-table" class="dashboard-table">
+    <caption><h2>你的最近访问</h2></caption>
+    <thead>
+      <tr>
+	<th>时间</th>
+	<th>结果</th>
+      </tr>
+    </thead>
+    <tbody>
+      # for datetime, result in recent_access:
+      <tr>
+	<td>{{ datetime.strftime("%Y/%m/%d %H:%M:%S") }}</td>
+	<td>{{ "成功" if result["success"] else "失败" }}</td>
+      </tr>
+      # endfor
+    </tbody>
+  </table>
+</div>
+
+# endblock

@@ -1,0 +1,39 @@
+/// -*- mode:jinja2 -*-
+
+# extends "dashboard/base.tmpl"
+
+# block content
+
+<div id="dashboard-title">
+  <h1>日志</h1>
+</div>
+
+<div class="table-wrapper" id="log-table-wrapper">
+  <table id="log-table" class="dashboard-table">
+    <caption><h2>日志</h2></caption>
+    <thead>
+      <tr>
+	<th>类型</th>
+	<th>来自</th>
+	<th>时间</th>
+	<th>细节</th>
+      </tr>
+    </thead>
+    <tbody>
+      # for id, type, operator, datetime, data, name in logs
+      <tr>
+	<td>{{ log_type_to_string(type) }}</td>
+	<td>{{ name }}</td>
+	<td>{{ datetime.strftime("%Y-%m-%d %H:%M:%S") }}</td>
+	# if type in ["update_userinfo", "update_profile", "delete", "restore"]
+	<td><a href="/dashboard/log/detail/{{ id }}">细节</a></td>
+	# else
+	<td>{{ log_data_simple(type, data) }}</td>
+	# endif
+      </tr>
+      # endfor
+    </tbody>
+  </table>
+</div>
+
+# endblock

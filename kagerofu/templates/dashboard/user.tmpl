@@ -1,0 +1,38 @@
+/// -*- mode: jinja2 -*-
+
+# extends "dashboard/base.tmpl"
+
+# block content
+
+<div id="dashboard-title">
+  <h1>用户管理</h1>
+</div>
+
+<form id="dashboard-user-search-form" class="dashboard-form" method="GET" action="/dashboard/users">
+  <div class="input-group">
+    <label>搜索用户</label>
+    <input type="text" name="s">
+  </div>
+</form>
+
+# if users
+<table id="user-list-table" class="dashboard-table">
+  <caption>用户列表</caption>
+  <thead>
+    <tr>
+      <th>用户名</th>
+      <th>昵称</th>
+    </tr>
+  </thead>
+  <tbody>
+    # for id, name, nick in users:
+    <tr>
+      <td><a href="userinfo/{{ id }}">{{ name }}</a></td>
+      <td>{{ nick }}</td>
+    </tr>
+  </tbody>
+  # endfor
+</table>
+# endif
+
+# endblock

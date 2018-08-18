@@ -12,14 +12,7 @@
 	  <a href="/thread/view/{{ thread_id }}"><h2>{{ thread_title }}</h2></a>
 	  <div class="thread-info">
 	    <span class="info-before"></span>
-	    # if reply_count == 2
-	    # set reply_info = "{} Reply".format(reply_count - 1)
-	    # elif reply_count == 1
-	    # set reply_info = "No Reply"
-	    # else
-	    # set reply_info = "{} Replies".format(reply_count - 1)
-	    # endif
-	    <span class="info"><p> {{ author }}</p><p> {{ last_modified.strftime("%b %d %Y %H:%M") }}</p><p class="reply-info"> {{ reply_info }}</p></span>
+	    <span class="info"><p> {{ author }}</p><p> {{ last_modified.strftime("%Y-%m-%d %H:%M") }}</p><p class="reply-info"> {{ reply_count - 1 }}条回复</p></span>
 	  </div>
 	</li>
 	# endfor

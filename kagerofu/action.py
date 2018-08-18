@@ -8,6 +8,7 @@ import crypt
 from kagerofu.template import render_template
 from kagerofu.database import get_pg_connection
 from kagerofu.cookie import read_cookie, create_cookie
+from kagerofu.logging import write_log
 from kagerofu import config
 
 bp = flask.Blueprint("action", __name__)
@@ -27,7 +28,7 @@ def login():
         referrer = "/"
 
     if flask.request.method == "GET":        
-        return render_template("login.tmpl", title = "Login", referrer = flask.request.referrer, error = None, type = "login")
+        return render_template("login.tmpl", title = "登录", referrer = flask.request.referrer, error = None, type = "login")
     else:
         username = flask.request.form["username"]
         password = flask.request.form["password"]
@@ -40,7 +41,8 @@ def login():
             if salt:
                 salt = salt[0]
             else:
-                error = "Wrong username or password"
+                error = "用户名或密码错误"
+                write_log("login", "", {"success": False, "username": username, "reason": "user does not exist"})
                 return render_template("login.tmpl", referrer=referrer, error=error, title="Login", type="login")
             hashed_password = hashlib.sha256((password + salt).encode()).hexdigest().upper()                    
             cursor.execute("SELECT user_id AS uid FROM users WHERE name = %s AND password = %s",
@@ -49,7 +51,8 @@ def login():
             ret = cursor.fetchone()
             if not ret:
                 cnx.close()
-                error = "Wrong username or password"
+                error = "用户名或密码错误"
+                write_log("login", "", {"success": False, "username": username, "reason": "wrong password"})
                 return render_template("login.tmpl", referrer = referrer, error = error, title = "Login", type = "login")
         finally:
             cnx.close()
@@ -58,39 +61,41 @@ def login():
         cookie = create_cookie(userid)
         response = flask.make_response(flask.redirect(referrer))
         response.set_cookie("session", cookie, expires=32503680000)
+        write_log("login", userid, {"success": True, "username": username})
         return response
 
-@bp.route('/register', methods=['GET', 'POST'])
-def register():
+@bp.route('/registration', methods = ['GET', 'POST'])
+def registration():
     if flask.request.method == "GET":
-        return render_template('login.tmpl', title = 'Register', referrer = flask.request.referrer, type = "register")
+        referrer = flask.request.referrer
+        return render_template("login.tmpl", title = "注册", referrer = referrer, type = "registration")
 
-    username = flask.request.form["username"]
-    password = flask.request.form["password"]
-    email = flask.request.form["email"]
-    referrer = flask.request.form["referrer"]
+    try:
+        username = flask.request.form["username"]
+        password = flask.request.form["password"]
+        email = flask.request.form["email"]
+        referrer = flask.request.form["referrer"]
+    except KeyError:
+        flask.abort(400)
 
     cnx = get_pg_connection()
-
-    cursor = cnx.cursor()
-    cursor.execute('SELECT name FROM users WHERE name = %s', (username, ))
-    if cursor.fetchone():
-        cnx.close()
-        return render_template("login.tmpl", error = "User already exists", referrer = referrer, title = 'Register', type = "register")
-
-    user_id = str(uuid.uuid4()).replace('-', '')
-
-    hashed_password = hashlib.sha256(password.encode()).hexdigest().upper()
-    
     try:
         cursor = cnx.cursor()
-        cursor.execute("INSERT INTO users VALUES (%s, %s, %s, %s, %s, FALSE, FALSE, '')",
-                       (user_id, username, email, hashed_password, username))
-        cnx.commit()
+        cursor.execute("SELECT * FROM users WHERE name = %s", (username, ))
+        if cursor.fetchone() != None:
+            write_log("registration", "", {"success": False, "username": username, "reason": "user already exists"})
+            return render_template("login.tmpl", title = "注册", referrer = referrer, error = "用户 {} 已经存在".format(username))
+
+        user_id = str(uuid.uuid4()).replace('-', '').upper()
+        salt = crypt.mksalt(crypt.SHA_256)
+        hashed_password = hashlib.sha256((password + salt).encode()).upper()
+        cursor.execute("INSERT INTO users VALUE ( "
+                       "%s, %s, %s, %s, %s, FALSE, FALSE, %s",
+                       user_id, username, email, hashed_password, username, salt)
+        write_log("registration", user_id, {"success": True})
     finally:
         cnx.close()
 
-    cookie = create_cookie(user_id)
     response = flask.make_response(flask.redirect(referrer))
     response.set_cookie("session", cookie, expires=32503680000)
     return response
@@ -99,7 +104,6 @@ def register():
 def logout():
     referrer = flask.request.referrer
 
-    print(referrer)
     try:
         referrer.index("/logout")
     except ValueError:
@@ -107,10 +111,20 @@ def logout():
     else:
         referrer = "/"
 
-    print(referrer)
+    cookie = flask.request.cookies.get("session")
+    if cookie == None:
+        return flask.redirect(referrer)
 
+    user_id = read_cookie(cookie)
+    if user_id == None:
+        return flask.redirect(referrer)
+
+    cnx = get_pg_connection()
+        
     response = flask.make_response(flask.redirect(referrer))
     response.set_cookie("session", "", expires=0)
+    response.set_cookie("sudo_mode", "", expires=0)
+    write_log("logout", user_id, {"success": True})
     return response
 
 @bp.route('/new')
@@ -121,7 +135,7 @@ def new():
         
     finally:
         cnx.close()
-
+    
     return render_template("edit.tmpl", title = "New Thread", type="new_thread")
 
 @bp.route('/action/new_thread', methods=['POST'])
@@ -136,11 +150,14 @@ def new_thread():
     if userid == None:
         flask.abort(401)
 
-    title = flask.request.form["title"]
-    category = flask.request.form["category"]
-    renderer = flask.request.form["renderer"]
-    content = flask.request.form["content"]
-    is_draft = bool(int(flask.request.form["draft"]))
+    try:
+        title = flask.request.form["title"]
+        category = flask.request.form["category"]
+        renderer = flask.request.form["renderer"]
+        content = flask.request.form["content"]
+        is_draft = bool(int(flask.request.form["draft"]))
+    except KeyError:
+        flask.abort(400)
 
     thread_id = str(uuid.uuid4()).replace('-', '')
     post_id = str(uuid.uuid4()).replace('-', '')
@@ -161,7 +178,7 @@ def new_thread():
                        "%s, %s, %s, %s, %s)",
                        (post_content_id, post_id, renderer, content, now))
         cnx.commit()
-
+        write_log("new_thread", userid, {"success": True, "id": thread_id, "title": title})
     finally:
         cnx.close()
 
@@ -178,10 +195,13 @@ def reply():
 
     if userid == None:
         flask.abort(401)
-
-    renderer = flask.request.form["renderer"]
-    content = flask.request.form["content"]
-    thread_id = flask.request.form["thread_id"]
+            
+    try:
+        renderer = flask.request.form["renderer"]
+        content = flask.request.form["content"]
+        thread_id = flask.request.form["thread_id"]
+    except KeyError:
+        flask.abort(400)
 
     post_id = str(uuid.uuid4()).replace('-', '')
     post_content_id = str(uuid.uuid4()).replace('-', '')
@@ -196,6 +216,7 @@ def reply():
                        "%s, %s, %s, %s, %s)",
                        (post_content_id, post_id, renderer, content, now))
         cnx.commit()
+        write_log("new_reply", userid, {"success": True, "post_id": post_id, "content_id": post_content_id})
     finally:
         cnx.close()
 
@@ -203,44 +224,68 @@ def reply():
 
 @bp.route('/action/edit/<edit_type>', methods=['POST'])
 def edit(edit_type):
-    renderer = flask.request.form["renderer"]
-    content = flask.request.form["content"]
-    referrer = flask.request.form["referrer"]
-    post_id = flask.request.form["post_id"]
+    try:
+        renderer = flask.request.form["renderer"]
+        content = flask.request.form["content"]
+        referrer = flask.request.form["referrer"]
+        post_id = flask.request.form["post_id"]
+    except KeyError:
+        flask.abort(400)
+        
 
     user = read_cookie(flask.request.cookies["session"])
 
     cnx = get_pg_connection()
     try:
         cursor = cnx.cursor()        
-        cursor.execute("SELECT post.author, users.admin FROM post, users WHERE post.post_id = %s AND users.user_id = %s AND (post.author = users.user_id OR users.admin = TRUE)",
+        cursor.execute("SELECT post.author, users.admin, post.content FROM post, users "
+                       "WHERE post.post_id = %s AND users.user_id = %s "
+                       "AND (post.author = users.user_id OR users.admin = TRUE)",
                        (post_id, user))
-        if not cursor.fetchone():            
+        post_ret = cursor.fetchone()
+        
+        if not ret:
             cnx.close()
             flask.abort(401)
+
+        _, _, old_content_id = ret
     except:
         cnx.close()
         raise
 
     if edit_type == "thread":
-        thread_id = flask.request.form["thread_id"]
-        title = flask.request.form["title"]
-        category = flask.request.form["category"]
-        is_draft = bool(int(flask.request.form["draft"]))
+        try:
+            thread_id = flask.request.form["thread_id"]
+            title = flask.request.form["title"]
+            category = flask.request.form["category"]
+            is_draft = bool(int(flask.request.form["draft"]))
+        except KeyError:
+            flask.abort(400)
 
-    post_content_id = str(uuid.uuid4()).replace('-', '')
-    now = datetime.datetime.now()
+        cnx = get_pg_connection()
+        try:
+            cursor = cnx.cursor()
+            cursor.execute("SELECT title, category, draft FROM thread "
+                           "WHERE thread_id = %s",
+                           (thread_id, ))
+            old_title, old_category, old_draft = cursor.fetchone()
+        except TypeError:
+            flask.abort(400)
+        
+            
+    new_content_id = str(uuid.uuid4()).replace('-', '')
 
+    cnx = get_pg_connection()
     try:
         cursor = cnx.cursor()
         cursor.execute(
             "INSERT INTO post_content VALUES ("
-            "%s, %s, %s, %s, %s)",
-            (post_content_id, post_id, renderer, content, now))
+            "%s, %s, %s, %s, NOW())",
+            (new_content_id, post_id, renderer, content))
 
         cursor.execute(
-            "UPDATE post SET content = %s, last_modified = %s WHERE post_id=%s",
-            (post_content_id, now, post_id))
+            "UPDATE post SET content = %s, last_modified = %s WHERE post_id = %s",
+            (new_content_id, now, post_id))
 
         if edit_type == "thread":
             cursor.execute(
@@ -254,6 +299,20 @@ def edit(edit_type):
     finally:
         cnx.close()
 
+    log_data = {
+        "post_id": post_id,
+        "type": edit_type,
+        "rev": [old_content_id, new_content_id]
+    }
+
+    if edit_type == "thread":
+        log_data["thread"] = {
+            "title": [old_title, title],
+            "category": [old_category, category],
+            "draft": [old_draft, draft]
+        }
+
+    write_log("edit", user, log_data)
     return flask.redirect(referrer)
 
 @bp.route('/search')
@@ -304,8 +363,8 @@ def userinfo():
         return render_template("userinfo.tmpl", error=False, name=name, email=email, nick=nick, title="User Info")
     else:
         try:
-            email = flask.request.form["email"]
-            nick = flask.request.form["nick"]
+            new_email = flask.request.form["email"]
+            new_nick = flask.request.form["nick"]
             old_password = flask.request.form["old_password"]
             new_password = flask.request.form["new_password"]
         except:
@@ -320,6 +379,7 @@ def userinfo():
                                (user, hashed_old_password))
                 if not cursor.fetchone():
                     cnx.close()
+                    write_log("update_userinfo", user, {"success": False, "reason": "wrong password"})
                     return render_template("userinfo.tmpl", error=True, name=name, email=email, nick=nick, title="User Info")
             except:
                 cnx.close()
@@ -334,15 +394,20 @@ def userinfo():
         try:
             cursor = cnx.cursor()
             if hashed_password:
-                print("password")
                 cursor.execute("UPDATE users SET email = %s, nick = %s, password = %s, salt = %s WHERE user_id = %s",
-                               (email, nick, hashed_password, salt, user))
+                               (new_email, new_nick, hashed_password, salt, user))
             else:
-                print("no password")
                 cursor.execute("UPDATE users SET email = %s, nick = %s WHERE user_id = %s",
-                               (email, nick, user))
+                               (new_email, new_nick, user))
             cnx.commit()
         finally:
             cnx.close()
 
+        log_data = {
+            "success": True,
+            "nick": [nick, new_nick],
+            "email": [email, new_email],
+            "password_changed": new_password != ""
+        }
+        write_log("update_userinfo", user, log_data)
         return flask.redirect("/userinfo")

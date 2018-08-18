@@ -12,7 +12,7 @@
 
   <li id="sidebar-categories" class="sidebar-entry">
     <div class="sidebar-form-wrapper">
-      <h2>Categories</h2>
+      <h2>分类</h2>
       <ul>
 	# for name, id in categories
 	<li><a href="/category/{{ id }}">{{ name }}</a></li>
@@ -22,17 +22,20 @@
   </li>
   <li id="sidebar-navigation" class="sidebar-entry">
     <div class="sidebar-form-wrapper">
-      <h2>Navigation</h2>
+      <h2>导航</h2>
       <ul>
-	<li><a href="/">Index</a></li>
-	<li><a href="/drafts">Drafts</a></li>
-	<li><a href="/search">Search</a></li>
+	<li><a href="/">主页</a></li>
+	<li><a href="/search">搜索</a></li>
 	# if user
-	<li><a href="/new">New Thread</a></li>
-	<li><a href="/logout">Logout</a></li>
+	# if admin
+	<li><a href="/dashboard">大本营</a></li>
+	# endif
+	<li><a href="/drafts">草稿</a></li>
+	<li><a href="/new">新主题</a></li>
+	<li><a href="/logout">注销</a></li>
 	# else
-	<li><a href="/login">Login</a></li>
-	<li><a href="/register">Register</a></li>
+	<li><a href="/login">登录</a></li>
+	<li><a href="/registration">注册</a></li>
 	# endif
       </ul>
     </div>
