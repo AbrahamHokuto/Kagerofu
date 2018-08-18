@@ -55,7 +55,7 @@ def log_data_simple(log_type, data):
     elif log_type == "category_merge":
         return "{} -> {}".format(data["src"]["name"], data["dst"]["name"])
     elif log_type == "category_new":
-        return data["name"]
+        return data["category"]
     elif log_type in ["delete", "restore"]:
         type = "主题" if data["type"] == "thread" else "回复"
         return "{}: {}".format(type, data["id"])
