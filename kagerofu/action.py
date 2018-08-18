@@ -88,7 +88,7 @@ def registration():
 
         user_id = str(uuid.uuid4()).replace('-', '').upper()
         salt = crypt.mksalt(crypt.SHA_256)
-        hashed_password = hashlib.sha256((password + salt).encode()).upper()
+        hashed_password = hashlib.sha256((password + salt).encode()).hexdigest().upper()
         cursor.execute("INSERT INTO users VALUE ( "
                        "%s, %s, %s, %s, %s, FALSE, FALSE, %s",
                        user_id, username, email, hashed_password, username, salt)
@@ -96,6 +96,7 @@ def registration():
     finally:
         cnx.close()
 
+    cookie = create_cookie(user_id)
     response = flask.make_response(flask.redirect(referrer))
     response.set_cookie("session", cookie, expires=32503680000)
     return response
@@ -284,8 +285,8 @@ def edit(edit_type):
             (new_content_id, post_id, renderer, content))
 
         cursor.execute(
-            "UPDATE post SET content = %s, last_modified = %s WHERE post_id = %s",
-            (new_content_id, now, post_id))
+            "UPDATE post SET content = %s, last_modified = NOW() WHERE post_id = %s",
+            (new_content_id, post_id))
 
         if edit_type == "thread":
             cursor.execute(
@@ -309,7 +310,7 @@ def edit(edit_type):
         log_data["thread"] = {
             "title": [old_title, title],
             "category": [old_category, category],
-            "draft": [old_draft, draft]
+            "draft": [old_draft, is_draft]
         }
 
     write_log("edit", user, log_data)
