@@ -308,6 +308,7 @@ def edit(edit_type):
 
     if edit_type == "thread":
         log_data["thread"] = {
+            "success": True,
             "title": [old_title, title],
             "category": [old_category, category],
             "draft": [old_draft, is_draft]
