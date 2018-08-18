@@ -301,6 +301,7 @@ def edit(edit_type):
         cnx.close()
 
     log_data = {
+        "success": True,
         "post_id": post_id,
         "type": edit_type,
         "rev": [old_content_id, new_content_id]
@@ -308,7 +309,6 @@ def edit(edit_type):
 
     if edit_type == "thread":
         log_data["thread"] = {
-            "success": True,
             "title": [old_title, title],
             "category": [old_category, category],
             "draft": [old_draft, is_draft]
