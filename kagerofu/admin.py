@@ -110,7 +110,8 @@ def index():
         recent_events = list(cursor)
 
         cursor.execute("SELECT log.datetime, log.data FROM log, users "
-                       "WHERE users.user_id = log.operator AND log.operator = %s ORDER by log.datetime DESC LIMIT 10",
+                       "WHERE users.user_id = log.operator AND log.operator = %s "
+                       "AND log.type = 'dashboard_access' ORDER by log.datetime DESC LIMIT 10",
                        (user, ))
         recent_access = list(cursor)
     finally:
