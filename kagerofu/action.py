@@ -87,7 +87,7 @@ def registration():
             return render_template("login.tmpl", title = "注册", referrer = referrer, error = "用户 {} 已经存在".format(username))
 
         user_id = str(uuid.uuid4()).replace('-', '').upper()
-        salt = crypt.mksalt(crypt.SHA_256)
+        salt = crypt.mksalt(crypt.METHOD_SHA256)
         hashed_password = hashlib.sha256((password + salt).encode()).hexdigest().upper()
         cursor.execute("INSERT INTO users VALUE ( "
                        "%s, %s, %s, %s, %s, FALSE, FALSE, %s",
