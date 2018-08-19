@@ -92,6 +92,7 @@ def registration():
         cursor.execute("INSERT INTO users VALUES ( "
                        "%s, %s, %s, %s, %s, FALSE, FALSE, %s)",
                        (user_id, username, email, hashed_password, username, salt))
+        cnx.commit()
         write_log("registration", user_id, {"success": True})
     finally:
         cnx.close()
