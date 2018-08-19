@@ -91,7 +91,7 @@ def registration():
         hashed_password = hashlib.sha256((password + salt).encode()).hexdigest().upper()
         cursor.execute("INSERT INTO users VALUE ( "
                        "%s, %s, %s, %s, %s, FALSE, FALSE, %s",
-                       user_id, username, email, hashed_password, username, salt)
+                       (user_id, username, email, hashed_password, username, salt))
         write_log("registration", user_id, {"success": True})
     finally:
         cnx.close()
