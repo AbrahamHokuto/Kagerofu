@@ -90,7 +90,7 @@ def registration():
         salt = crypt.mksalt(crypt.METHOD_SHA256)
         hashed_password = hashlib.sha256((password + salt).encode()).hexdigest().upper()
         cursor.execute("INSERT INTO users VALUES ( "
-                       "%s, %s, %s, %s, %s, FALSE, FALSE, %s",
+                       "%s, %s, %s, %s, %s, FALSE, FALSE, %s)",
                        (user_id, username, email, hashed_password, username, salt))
         write_log("registration", user_id, {"success": True})
     finally:
